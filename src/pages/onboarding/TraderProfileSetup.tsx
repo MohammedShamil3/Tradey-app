@@ -687,7 +687,7 @@ const TraderProfileSetup = () => {
                 {/* Document checklist */}
                 <div>
                   <h4 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    All Documents ({Object.keys(uploadedDocs).length}/{requiredDocuments.length})
+                    All Documents ({requiredDocuments.filter(isDocFullyUploaded).length}/{requiredDocuments.length})
                   </h4>
                   <div className="rounded-2xl bg-card card-shadow overflow-hidden">
                     {requiredDocuments.map((doc, i) => {
