@@ -22,6 +22,7 @@ interface DocumentRequirement {
   mandatory: boolean;
   acceptedFormats: string;
   helpText: string;
+  hasFrontBack?: boolean;
 }
 
 const requiredDocuments: DocumentRequirement[] = [
