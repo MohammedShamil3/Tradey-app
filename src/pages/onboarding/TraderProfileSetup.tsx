@@ -556,7 +556,62 @@ const TraderProfileSetup = () => {
                 </div>
 
                 {/* Upload area */}
-                {uploadedDocs[currentDoc.id] ? (
+                {currentDoc.hasFrontBack ? (
+                  /* Front & Back upload for ID-type documents */
+                  <div className="flex flex-col gap-3">
+                    {(["front", "back"] as const).map((side) => {
+                      const key = `${currentDoc.id}-${side}`;
+                      const uploaded = uploadedDocs[key];
+                      return (
+                        <div key={side}>
+                          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            {side === "front" ? "📄 Front Side" : "📄 Back Side"}
+                          </p>
+                          {uploaded ? (
+                            <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-4">
+                              <div className="flex items-center gap-3">
+                                <CheckCircle2 className="h-8 w-8 text-primary shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-bold text-foreground truncate">{uploaded.fileName}</p>
+                                  <p className="text-[10px] text-muted-foreground">{uploaded.uploadedAt}</p>
+                                </div>
+                                <div className="flex gap-2 shrink-0">
+                                  <button onClick={() => handleDocUpload(key, "camera")} className="text-[10px] font-semibold text-primary">Retake</button>
+                                  <button onClick={() => handleDocUpload(key, "file")} className="text-[10px] font-semibold text-primary">Replace</button>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex gap-2.5">
+                              <button
+                                onClick={() => handleDocUpload(key, "camera")}
+                                className="flex-1 rounded-xl border-2 border-dashed border-border bg-card p-4 transition-all active:scale-[0.98] active:border-primary"
+                              >
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                    <Camera className="h-5 w-5 text-primary" />
+                                  </div>
+                                  <p className="text-[10px] font-bold text-foreground">Take Photo</p>
+                                </div>
+                              </button>
+                              <button
+                                onClick={() => handleDocUpload(key, "file")}
+                                className="flex-1 rounded-xl border-2 border-dashed border-border bg-card p-4 transition-all active:scale-[0.98] active:border-primary"
+                              >
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
+                                    <Upload className="h-5 w-5 text-primary" />
+                                  </div>
+                                  <p className="text-[10px] font-bold text-foreground">Upload File</p>
+                                </div>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : uploadedDocs[currentDoc.id] ? (
                   <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-6">
                     <div className="flex flex-col items-center gap-2 text-center">
                       <CheckCircle2 className="h-10 w-10 text-primary" />
@@ -564,25 +619,14 @@ const TraderProfileSetup = () => {
                       <p className="text-xs text-muted-foreground">{uploadedDocs[currentDoc.id].fileName}</p>
                       <p className="text-[10px] text-muted-foreground">{uploadedDocs[currentDoc.id].uploadedAt}</p>
                       <div className="mt-2 flex gap-3">
-                        <button
-                          onClick={() => handleDocUpload(currentDoc.id, "camera")}
-                          className="text-xs font-semibold text-primary"
-                        >
-                          Retake photo
-                        </button>
+                        <button onClick={() => handleDocUpload(currentDoc.id, "camera")} className="text-xs font-semibold text-primary">Retake photo</button>
                         <span className="text-xs text-border">|</span>
-                        <button
-                          onClick={() => handleDocUpload(currentDoc.id, "file")}
-                          className="text-xs font-semibold text-primary"
-                        >
-                          Replace file
-                        </button>
+                        <button onClick={() => handleDocUpload(currentDoc.id, "file")} className="text-xs font-semibold text-primary">Replace file</button>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div className="flex gap-3">
-                    {/* Camera option */}
                     <button
                       onClick={() => handleDocUpload(currentDoc.id, "camera")}
                       className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary"
@@ -599,8 +643,6 @@ const TraderProfileSetup = () => {
                         </div>
                       </div>
                     </button>
-
-                    {/* File upload option */}
                     <button
                       onClick={() => handleDocUpload(currentDoc.id, "file")}
                       className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary"
