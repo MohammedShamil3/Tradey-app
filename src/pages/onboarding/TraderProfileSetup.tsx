@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { serviceCategories, catAServices, catBServices, getAllServices } from "@/data/services";
+import { categoryServiceTypes } from "@/data/serviceTypes";
 import { EmojiIcon, getEmojiIconColors, categoryIconMap, categoryColorMap, iconMap } from "@/lib/icons";
 
 const mainSteps = ["Business", "Services", "Documents"];
@@ -112,16 +113,10 @@ const TraderProfileSetup = () => {
   const [postcode, setPostcode] = useState(profile?.postcode || "");
   const [yearsExperience, setYearsExperience] = useState("");
 
-  // Step 1 - Services (category → sub-services)
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  // Step 1 - Services (category list → subpage with expandable service types)
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  const [expandedServiceType, setExpandedServiceType] = useState<string | null>(null);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-
-  const categoriesWithServices = serviceCategories
-    .filter((c) => c.id !== "all")
-    .map((cat) => ({
-      ...cat,
-      services: getAllServices().filter((s) => s.categoryId === cat.id),
-    }));
 
   const toggleService = (serviceId: string) => {
     setSelectedServices((prev) =>
@@ -129,22 +124,20 @@ const TraderProfileSetup = () => {
     );
   };
 
-  const toggleAllInCategory = (categoryId: string) => {
-    const catServiceIds = getAllServices()
-      .filter((s) => s.categoryId === categoryId)
-      .map((s) => s.id);
-    const allSelected = catServiceIds.every((id) => selectedServices.includes(id));
-    if (allSelected) {
-      setSelectedServices((prev) => prev.filter((id) => !catServiceIds.includes(id)));
-    } else {
-      setSelectedServices((prev) => [...new Set([...prev, ...catServiceIds])]);
-    }
+  const getSelectedCountForCategory = (categoryId: string) => {
+    const cat = categoryServiceTypes.find((c) => c.categoryId === categoryId);
+    if (!cat) return 0;
+    return cat.serviceTypes.flatMap((st) => st.options).filter((o) => selectedServices.includes(o.id)).length;
   };
 
-  const getSelectedCountForCategory = (categoryId: string) => {
-    return getAllServices()
-      .filter((s) => s.categoryId === categoryId)
-      .filter((s) => selectedServices.includes(s.id)).length;
+  const getTotalCountForCategory = (categoryId: string) => {
+    const cat = categoryServiceTypes.find((c) => c.categoryId === categoryId);
+    if (!cat) return 0;
+    return cat.serviceTypes.flatMap((st) => st.options).length;
+  };
+
+  const getSelectedCountForServiceType = (serviceType: { options: { id: string }[] }) => {
+    return serviceType.options.filter((o) => selectedServices.includes(o.id)).length;
   };
 
   // Step 2 - Documents
@@ -211,7 +204,10 @@ const TraderProfileSetup = () => {
   };
 
   const handleBack = () => {
-    if (step === 2 && docSubStep > 0) {
+    if (step === 1 && activeCategoryId) {
+      setActiveCategoryId(null);
+      setExpandedServiceType(null);
+    } else if (step === 2 && docSubStep > 0) {
       setDocSubStep(docSubStep - 1);
     } else if (step > 0) {
       setStep(step - 1);
@@ -329,91 +325,113 @@ const TraderProfileSetup = () => {
             </div>
           )}
 
-          {/* Step 1: Category → Service selection */}
-          {step === 1 && (
+          {/* Step 1: Services — category list or category subpage */}
+          {step === 1 && !activeCategoryId && (
             <div className="flex flex-1 flex-col gap-3 overflow-y-auto pb-4">
               <p className="text-xs text-muted-foreground">
-                Select categories and the specific services you offer · {selectedServices.length} services selected
+                Tap a category to select the services you offer · {selectedServices.length} selected
               </p>
 
               <div className="flex flex-col gap-2.5">
-                {categoriesWithServices.map((cat) => {
-                  const selectedCount = getSelectedCountForCategory(cat.id);
-                  const totalCount = cat.services.length;
-                  const allSelected = totalCount > 0 && selectedCount === totalCount;
+                {categoryServiceTypes.map((cat) => {
+                  const selectedCount = getSelectedCountForCategory(cat.categoryId);
+                  const totalCount = getTotalCountForCategory(cat.categoryId);
                   const someSelected = selectedCount > 0;
-                  const isExpanded = expandedCategory === cat.id;
 
                   return (
-                    <div key={cat.id} className="rounded-2xl border-2 border-border bg-card overflow-hidden transition-all">
-                      {/* Category header */}
-                      <button
-                        onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
-                        className="flex w-full items-center gap-3 p-3.5 text-left active:bg-muted/50 transition-colors"
-                      >
-                        {(() => { const n = categoryIconMap[cat.id] || "wrench"; const I = iconMap[n]; const c = categoryColorMap[cat.id]; return I ? <I size={24} weight="regular" className={c?.color || "text-muted-foreground"} /> : null; })()}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-bold text-foreground">{cat.label}</h4>
-                            {someSelected && (
-                              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-                                {selectedCount}/{totalCount}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[10px] text-muted-foreground">{totalCount} services available</p>
+                    <button
+                      key={cat.categoryId}
+                      onClick={() => setActiveCategoryId(cat.categoryId)}
+                      className="flex w-full items-center gap-3 rounded-2xl border-2 border-border bg-card p-4 text-left transition-all active:scale-[0.98]"
+                    >
+                      {(() => { const n = categoryIconMap[cat.categoryId] || "wrench"; const I = iconMap[n]; const c = categoryColorMap[cat.categoryId]; return I ? <I size={24} weight="regular" className={c?.color || "text-muted-foreground"} /> : null; })()}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-bold text-foreground">{cat.label}</h4>
+                          {someSelected && (
+                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                              {selectedCount}/{totalCount}
+                            </span>
+                          )}
                         </div>
-                        <ChevronDown className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
-                      </button>
-
-                      {/* Expanded: sub-services */}
-                      {isExpanded && (
-                        <div className="border-t border-border">
-                          {/* Select all toggle */}
-                          <button
-                            onClick={() => toggleAllInCategory(cat.id)}
-                            className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left border-b border-border active:bg-muted/50"
-                          >
-                            <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
-                              allSelected ? "border-primary bg-primary" : "border-border"
-                            }`}>
-                              {allSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />}
-                            </div>
-                            <span className="text-xs font-bold text-primary">Select all {cat.label} services</span>
-                          </button>
-
-                          {cat.services.map((service) => {
-                            const isSelected = selectedServices.includes(service.id);
-                            return (
-                              <button
-                                key={service.id}
-                                onClick={() => toggleService(service.id)}
-                                className="flex w-full items-center gap-3 px-4 py-3 text-left border-b border-border last:border-b-0 active:bg-muted/50 transition-colors"
-                              >
-                                <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
-                                  isSelected ? "border-primary bg-primary" : "border-border"
-                                }`}>
-                                  {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />}
-                                </div>
-                                <EmojiIcon emoji={service.icon} size={18} weight="regular" colorize />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-semibold text-foreground">{service.name}</p>
-                                  <p className="text-[10px] text-muted-foreground truncate">{service.description}</p>
-                                </div>
-                                <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[8px] font-bold text-secondary-foreground">
-                                  {service.category === "catA" ? "Quick" : "Project"}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
+                        <p className="text-[10px] text-muted-foreground">{totalCount} services available</p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </button>
                   );
                 })}
               </div>
             </div>
           )}
+
+          {/* Step 1 subpage: service types with expandable options */}
+          {step === 1 && activeCategoryId && (() => {
+            const cat = categoryServiceTypes.find((c) => c.categoryId === activeCategoryId);
+            if (!cat) return null;
+            return (
+              <div className="flex flex-1 flex-col gap-3 overflow-y-auto pb-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">{cat.emoji}</span>
+                  <h2 className="text-base font-bold text-foreground">{cat.label}</h2>
+                  <span className="ml-auto text-[10px] text-muted-foreground">
+                    {getSelectedCountForCategory(cat.categoryId)}/{getTotalCountForCategory(cat.categoryId)} selected
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  {cat.serviceTypes.map((st) => {
+                    const isExpanded = expandedServiceType === st.id;
+                    const stSelectedCount = getSelectedCountForServiceType(st);
+                    const someSelected = stSelectedCount > 0;
+
+                    return (
+                      <div key={st.id} className="rounded-2xl border-2 border-border bg-card overflow-hidden transition-all">
+                        <button
+                          onClick={() => setExpandedServiceType(isExpanded ? null : st.id)}
+                          className="flex w-full items-center gap-3 p-3.5 text-left active:bg-muted/50 transition-colors"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-sm font-bold text-foreground">{st.label}</h4>
+                              {someSelected && (
+                                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                                  {stSelectedCount}/{st.options.length}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground">{st.options.length} options</p>
+                          </div>
+                          <ChevronDown className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                        </button>
+
+                        {isExpanded && (
+                          <div className="border-t border-border">
+                            {st.options.map((option) => {
+                              const isSelected = selectedServices.includes(option.id);
+                              return (
+                                <button
+                                  key={option.id}
+                                  onClick={() => toggleService(option.id)}
+                                  className="flex w-full items-center gap-3 px-4 py-3 text-left border-b border-border last:border-b-0 active:bg-muted/50 transition-colors"
+                                >
+                                  <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
+                                    isSelected ? "border-primary bg-primary" : "border-border"
+                                  }`}>
+                                    {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />}
+                                  </div>
+                                  <p className="text-xs font-semibold text-foreground">{option.label}</p>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Step 2: Document upload — one at a time */}
           {step === 2 && currentDoc && (
