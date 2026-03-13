@@ -162,7 +162,13 @@ const TraderProfileSetup = () => {
 
   const mandatoryDocs = requiredDocuments.filter((d) => d.mandatory);
   const optionalDocs = requiredDocuments.filter((d) => !d.mandatory);
-  const allMandatoryUploaded = mandatoryDocs.every((d) => uploadedDocs[d.id]);
+  const isDocFullyUploaded = (doc: DocumentRequirement) => {
+    if (doc.hasFrontBack) {
+      return !!uploadedDocs[`${doc.id}-front`] && !!uploadedDocs[`${doc.id}-back`];
+    }
+    return !!uploadedDocs[doc.id];
+  };
+  const allMandatoryUploaded = mandatoryDocs.every(isDocFullyUploaded);
   const currentDoc = step === 2 ? requiredDocuments[docSubStep] : null;
 
   const canContinue = () => {
