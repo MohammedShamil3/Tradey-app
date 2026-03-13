@@ -141,6 +141,18 @@ const TraderProfileSetup = () => {
     return serviceType.options.filter((o) => selectedServices.includes(o.id)).length;
   };
 
+  // Step 3 - Permissions
+  const [permissions, setPermissions] = useState<Record<string, boolean>>({
+    notifications: false,
+    location: false,
+    camera: false,
+    microphone: false,
+  });
+
+  const togglePermission = (key: string) => {
+    setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   // Step 2 - Documents
   const [docSubStep, setDocSubStep] = useState(0);
   const [uploadedDocs, setUploadedDocs] = useState<Record<string, { fileName: string; uploadedAt: string }>>({});
@@ -154,6 +166,7 @@ const TraderProfileSetup = () => {
     if (step === 0) return fullName.trim() && city.trim() && postcode.trim();
     if (step === 1) return selectedServices.length > 0;
     if (step === 2) return allMandatoryUploaded;
+    if (step === 3) return true; // permissions are optional
     return false;
   };
 
