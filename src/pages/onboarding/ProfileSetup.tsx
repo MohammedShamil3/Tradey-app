@@ -14,13 +14,6 @@ const ProfileSetup = () => {
   const [dob, setDob] = useState(profile?.date_of_birth || "");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (profile?.role === "trader") {
-      navigate("/onboarding/trader-profile", { replace: true });
-    }
-  }, [profile?.role, navigate]);
-
-  if (profile?.role === "trader") return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

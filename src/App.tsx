@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Categories from "./pages/Categories";
@@ -65,7 +66,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, loading, updateProfile, user } = useAuth();
 
   if (loading) {
     return (
@@ -78,12 +79,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!session) return <Navigate to="/welcome" replace />;
 
   if (profile?.onboarding_status === "role_selection") {
-    return <Navigate to="/onboarding/role" replace />;
+    // Auto-assign customer role — skip role selection
+    if (user) {
+      updateProfile({ role: "customer", onboarding_status: "profile_setup" }).then(() => {
+        supabase.from("user_roles").upsert({ user_id: user.id, role: "customer" as const });
+      });
+    }
+    return <Navigate to="/onboarding/profile" replace />;
   }
   if (profile?.onboarding_status === "profile_setup") {
-    if (profile?.role === "trader") {
-      return <Navigate to="/onboarding/trader-profile" replace />;
-    }
     return <Navigate to="/onboarding/profile" replace />;
   }
 
@@ -120,7 +124,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* Onboarding */}
-            <Route path="/onboarding/role" element={<OnboardingRoute><RoleSelection /></OnboardingRoute>} />
+            <Route path="/onboarding/role" element={<Navigate to="/onboarding/profile" replace />} />
             <Route path="/onboarding/profile" element={<OnboardingRoute><ProfileSetup /></OnboardingRoute>} />
             <Route path="/onboarding/trader-profile" element={<OnboardingRoute><TraderProfileSetup /></OnboardingRoute>} />
 
