@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { serviceCategories, catAServices, catBServices, getAllServices } from "@/data/services";
+import { categoryServiceTypes } from "@/data/serviceTypes";
 import { EmojiIcon, getEmojiIconColors, categoryIconMap, categoryColorMap, iconMap } from "@/lib/icons";
 
 const mainSteps = ["Business", "Services", "Documents"];
