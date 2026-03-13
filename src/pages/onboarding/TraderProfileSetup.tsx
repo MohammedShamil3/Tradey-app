@@ -211,6 +211,13 @@ const TraderProfileSetup = () => {
   };
 
   const handleContinue = async () => {
+    // On services subpage, go back to category list first
+    if (step === 1 && activeCategoryId) {
+      setActiveCategoryId(null);
+      setExpandedServiceType(null);
+      return;
+    }
+
     if (step < 3) {
       setStep(step + 1);
       return;
