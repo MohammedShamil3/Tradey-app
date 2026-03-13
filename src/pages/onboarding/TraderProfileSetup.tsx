@@ -170,26 +170,43 @@ const TraderProfileSetup = () => {
     return false;
   };
 
-  const handleDocUpload = (docId: string) => {
-    // Simulate file upload
-    setUploadedDocs((prev) => ({
-      ...prev,
-      [docId]: {
-        fileName: `${docId}_scan.pdf`,
-        uploadedAt: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
-      },
-    }));
-    toast.success("Document uploaded successfully!");
+  const fileInputRef = useState<HTMLInputElement | null>(null);
+  const cameraInputRef = useState<HTMLInputElement | null>(null);
 
-    // Auto-advance to next un-uploaded mandatory doc after a brief pause
-    setTimeout(() => {
-      const nextUnuploaded = requiredDocuments.findIndex(
-        (d, i) => i > docSubStep && d.mandatory && !uploadedDocs[d.id]
-      );
-      if (nextUnuploaded !== -1) {
-        setDocSubStep(nextUnuploaded);
+  const handleDocUpload = (docId: string, method: "file" | "camera" = "file") => {
+    // Create a temporary file input to trigger native file/camera picker
+    const input = document.createElement("input");
+    input.type = "file";
+    if (method === "camera") {
+      input.accept = "image/*";
+      input.setAttribute("capture", "environment");
+    } else {
+      input.accept = "image/*,.pdf";
+    }
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        setUploadedDocs((prev) => ({
+          ...prev,
+          [docId]: {
+            fileName: file.name,
+            uploadedAt: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+          },
+        }));
+        toast.success(method === "camera" ? "Photo captured!" : "Document uploaded!");
+
+        // Auto-advance to next un-uploaded mandatory doc
+        setTimeout(() => {
+          const nextUnuploaded = requiredDocuments.findIndex(
+            (d, i) => i > docSubStep && d.mandatory && !uploadedDocs[d.id]
+          );
+          if (nextUnuploaded !== -1) {
+            setDocSubStep(nextUnuploaded);
+          }
+        }, 600);
       }
-    }, 600);
+    };
+    input.click();
   };
 
   const handleContinue = async () => {
