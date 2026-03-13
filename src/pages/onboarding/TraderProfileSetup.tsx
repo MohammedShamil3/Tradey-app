@@ -691,7 +691,8 @@ const TraderProfileSetup = () => {
                   </h4>
                   <div className="rounded-2xl bg-card card-shadow overflow-hidden">
                     {requiredDocuments.map((doc, i) => {
-                      const isUploaded = !!uploadedDocs[doc.id];
+                      const isUploaded = isDocFullyUploaded(doc);
+                      const isPartial = doc.hasFrontBack && !isUploaded && (!!uploadedDocs[`${doc.id}-front`] || !!uploadedDocs[`${doc.id}-back`]);
                       const isCurrent = i === docSubStep;
                       const DocIcon = doc.icon;
                       return (
