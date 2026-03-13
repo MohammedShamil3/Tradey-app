@@ -113,16 +113,10 @@ const TraderProfileSetup = () => {
   const [postcode, setPostcode] = useState(profile?.postcode || "");
   const [yearsExperience, setYearsExperience] = useState("");
 
-  // Step 1 - Services (category → sub-services)
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  // Step 1 - Services (category list → subpage with expandable service types)
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  const [expandedServiceType, setExpandedServiceType] = useState<string | null>(null);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-
-  const categoriesWithServices = serviceCategories
-    .filter((c) => c.id !== "all")
-    .map((cat) => ({
-      ...cat,
-      services: getAllServices().filter((s) => s.categoryId === cat.id),
-    }));
 
   const toggleService = (serviceId: string) => {
     setSelectedServices((prev) =>
@@ -130,22 +124,20 @@ const TraderProfileSetup = () => {
     );
   };
 
-  const toggleAllInCategory = (categoryId: string) => {
-    const catServiceIds = getAllServices()
-      .filter((s) => s.categoryId === categoryId)
-      .map((s) => s.id);
-    const allSelected = catServiceIds.every((id) => selectedServices.includes(id));
-    if (allSelected) {
-      setSelectedServices((prev) => prev.filter((id) => !catServiceIds.includes(id)));
-    } else {
-      setSelectedServices((prev) => [...new Set([...prev, ...catServiceIds])]);
-    }
+  const getSelectedCountForCategory = (categoryId: string) => {
+    const cat = categoryServiceTypes.find((c) => c.categoryId === categoryId);
+    if (!cat) return 0;
+    return cat.serviceTypes.flatMap((st) => st.options).filter((o) => selectedServices.includes(o.id)).length;
   };
 
-  const getSelectedCountForCategory = (categoryId: string) => {
-    return getAllServices()
-      .filter((s) => s.categoryId === categoryId)
-      .filter((s) => selectedServices.includes(s.id)).length;
+  const getTotalCountForCategory = (categoryId: string) => {
+    const cat = categoryServiceTypes.find((c) => c.categoryId === categoryId);
+    if (!cat) return 0;
+    return cat.serviceTypes.flatMap((st) => st.options).length;
+  };
+
+  const getSelectedCountForServiceType = (serviceType: { options: { id: string }[] }) => {
+    return serviceType.options.filter((o) => selectedServices.includes(o.id)).length;
   };
 
   // Step 2 - Documents
