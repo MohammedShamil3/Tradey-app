@@ -204,7 +204,10 @@ const TraderProfileSetup = () => {
   };
 
   const handleBack = () => {
-    if (step === 2 && docSubStep > 0) {
+    if (step === 1 && activeCategoryId) {
+      setActiveCategoryId(null);
+      setExpandedServiceType(null);
+    } else if (step === 2 && docSubStep > 0) {
       setDocSubStep(docSubStep - 1);
     } else if (step > 0) {
       setStep(step - 1);
