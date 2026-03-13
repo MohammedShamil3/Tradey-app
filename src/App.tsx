@@ -123,7 +123,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* Onboarding */}
-            <Route path="/onboarding/role" element={<OnboardingRoute><RoleSelection /></OnboardingRoute>} />
+            <Route path="/onboarding/role" element={<Navigate to="/onboarding/profile" replace />} />
             <Route path="/onboarding/profile" element={<OnboardingRoute><ProfileSetup /></OnboardingRoute>} />
             <Route path="/onboarding/trader-profile" element={<OnboardingRoute><TraderProfileSetup /></OnboardingRoute>} />
 
