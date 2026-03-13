@@ -179,7 +179,8 @@ const TraderProfileSetup = () => {
     input.type = "file";
     if (method === "camera") {
       input.accept = "image/*";
-      input.setAttribute("capture", "environment");
+      // Use front camera for selfie, back camera for documents
+      input.setAttribute("capture", docId === "selfie-verification" ? "user" : "environment");
     } else {
       input.accept = "image/*,.pdf";
     }
