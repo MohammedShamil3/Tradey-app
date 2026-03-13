@@ -504,7 +504,7 @@ const TraderProfileSetup = () => {
                     key={doc.id}
                     onClick={() => setDocSubStep(i)}
                     className={`h-1.5 flex-1 rounded-full transition-all ${
-                      uploadedDocs[doc.id]
+                      isDocFullyUploaded(doc)
                         ? "bg-primary"
                         : i === docSubStep
                         ? "bg-primary/40"
