@@ -704,7 +704,7 @@ const TraderProfileSetup = () => {
                           } ${i < requiredDocuments.length - 1 ? "border-b border-border" : ""}`}
                         >
                           <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
-                            isUploaded ? "bg-primary" : "bg-muted"
+                            isUploaded ? "bg-primary" : isPartial ? "bg-primary/50" : "bg-muted"
                           }`}>
                             {isUploaded ? (
                               <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />
