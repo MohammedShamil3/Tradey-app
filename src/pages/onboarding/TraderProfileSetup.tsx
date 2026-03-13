@@ -53,6 +53,7 @@ const requiredDocuments: DocumentRequirement[] = [
     mandatory: true,
     acceptedFormats: "JPG, PNG, PDF",
     helpText: "Under the Immigration, Asylum and Nationality Act 2006, we must verify your right to work in the UK before you can take on jobs.",
+    hasFrontBack: true,
   },
   {
     id: "public-liability",
