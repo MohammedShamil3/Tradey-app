@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Gupter:wght@400;500;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Backgrounds */
+    --background: 30 20% 97%;
+    --foreground: 218 60% 14%;
+
+    /* Cards */
+    --card: 0 0% 100%;
+    --card-foreground: 218 60% 14%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 218 60% 14%;
+
+    /* Primary — Midnight Blue */
+    --primary: 218 72% 20%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary — Light Danube tint */
+    --secondary: 213 30% 93%;
+    --secondary-foreground: 218 60% 14%;
+
+    /* Muted — Neutral warm gray */
+    --muted: 220 10% 96%;
+    --muted-foreground: 218 15% 50%;
+
+    /* Accent — Clean white */
+    --accent: 0 0% 97%;
+    --accent-foreground: 218 60% 14%;
+
+    /* Destructive — True red */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders */
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 218 72% 20%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 218 60% 14%;
+    --sidebar-primary: 218 72% 20%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 213 30% 93%;
+    --sidebar-accent-foreground: 218 60% 14%;
+    --sidebar-border: 220 13% 90%;
+    --sidebar-ring: 218 72% 20%;
+
+    /* Custom tokens */
+    --hero-gradient: linear-gradient(135deg, hsl(213 40% 95%), hsl(213 50% 88%));
+    --card-shadow: 0 1px 8px -1px hsl(218 40% 50% / 0.06), 0 1px 3px -1px hsl(218 40% 50% / 0.04);
+    --card-shadow-hover: 0 4px 20px -4px hsl(218 40% 50% / 0.12);
+    --nav-shadow: 0 -2px 12px hsl(218 40% 20% / 0.05);
+    --chip-active-shadow: 0 2px 8px hsl(218 72% 20% / 0.25);
+
+    /* Semantic colors */
+    --success: 152 60% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 42 100% 50%;
+    --warning-foreground: 218 60% 14%;
+    --star: 42 95% 52%;
+    --online: 152 60% 44%;
+    --info: 213 50% 58%;
+
+    /* Brand tokens */
+    --midnight: 218 72% 20%;
+    --danube: 213 50% 58%;
+    --blaze: 26 100% 50%;
+    --chablis: 0 100% 98%;
+
+    /* Charts */
+    --chart-1: 218 72% 20%;
+    --chart-2: 213 50% 58%;
+    --chart-3: 26 100% 50%;
+    --chart-4: 152 60% 40%;
+    --chart-5: 42 95% 52%;
+
+    --sidebar: 0 0% 98%;
+  }
+
+  .dark {
+    --background: 220 20% 10%;
+    --foreground: 210 20% 95%;
+    --card: 220 18% 14%;
+    --card-foreground: 210 20% 95%;
+    --popover: 220 18% 14%;
+    --popover-foreground: 210 20% 95%;
+    --primary: 213 50% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 20%;
+    --secondary-foreground: 210 20% 95%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 218 12% 58%;
+    --accent: 26 40% 18%;
+    --accent-foreground: 210 20% 95%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 10% 22%;
+    --input: 220 10% 22%;
+    --ring: 213 50% 58%;
+    --sidebar-background: 220 20% 8%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 213 50% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 20%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 220 10% 22%;
+    --sidebar-ring: 213 50% 58%;
+    --chart-1: 213 50% 58%;
+    --chart-2: 152 60% 40%;
+    --chart-3: 26 80% 55%;
+    --chart-4: 42 95% 52%;
+    --chart-5: 280 40% 55%;
+    --sidebar: 220 18% 14%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2 {
+    font-family: 'Gupter', Georgia, serif;
+  }
+  h3, h4, h5, h6 {
+    font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+}
+
+@layer utilities {
+  .hero-gradient {
+    background: var(--hero-gradient);
+  }
+  .card-shadow {
+    box-shadow: var(--card-shadow);
+  }
+  .card-shadow-hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+  .nav-shadow {
+    box-shadow: var(--nav-shadow);
+  }
+  .chip-active-shadow {
+    box-shadow: var(--chip-active-shadow);
+  }
+  .text-star {
+    color: hsl(var(--star));
+  }
+  .fill-star {
+    fill: hsl(var(--star));
+  }
+  .bg-success {
+    background-color: hsl(var(--success));
+  }
+  .text-online {
+    color: hsl(var(--online));
+  }
+  .bg-online {
+    background-color: hsl(var(--online));
+  }
+  .text-info {
+    color: hsl(var(--info));
+  }
+  .bg-info {
+    background-color: hsl(var(--info));
+  }
+}
+
+
+/* Restrict serif heading font to page/section titles only */
+.font-heading {
+  font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+h1.font-heading,
+h2.font-heading,
+h3.font-heading {
+  font-family: 'Gupter', Georgia, serif !important;
+}
+
+/* Hide scrollbar for mobile feel */
+::-webkit-scrollbar {
+  display: none;
+}
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

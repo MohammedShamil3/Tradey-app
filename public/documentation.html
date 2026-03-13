@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Platform Documentation — Complete Product Specification</title>
+<style>
+  @media print {
+    body { font-size: 11px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 17px; page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    h3 { font-size: 14px; }
+    table { page-break-inside: avoid; }
+    pre { page-break-inside: avoid; }
+    .no-print { display: none; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1a1a2e; line-height: 1.65; max-width: 900px; margin: 0 auto; padding: 40px 32px 80px; }
+  h1 { font-size: 28px; font-weight: 800; margin-bottom: 4px; color: #0f172a; }
+  h2 { font-size: 21px; font-weight: 700; margin-top: 48px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; color: #0f172a; }
+  h3 { font-size: 16px; font-weight: 600; margin-top: 28px; margin-bottom: 10px; color: #1e293b; }
+  h4 { font-size: 14px; font-weight: 600; margin-top: 20px; margin-bottom: 8px; color: #334155; }
+  p, li { font-size: 13.5px; color: #334155; }
+  p { margin-bottom: 10px; }
+  ul, ol { margin-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 4px; }
+  strong { color: #0f172a; }
+  code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: "SF Mono", Menlo, monospace; }
+  pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; overflow-x: auto; margin: 12px 0; font-size: 11.5px; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: #f1f5f9; text-align: left; padding: 8px 12px; font-weight: 600; color: #0f172a; border: 1px solid #e2e8f0; }
+  td { padding: 7px 12px; border: 1px solid #e2e8f0; color: #334155; }
+  tr:nth-child(even) td { background: #fafbfc; }
+  blockquote { border-left: 3px solid #6366f1; padding: 8px 16px; margin: 12px 0; background: #f5f3ff; border-radius: 0 6px 6px 0; }
+  blockquote p { color: #4338ca; margin: 0; font-size: 13px; }
+  hr { border: none; border-top: 1px solid #e2e8f0; margin: 32px 0; }
+  .subtitle { color: #64748b; font-size: 13px; margin-bottom: 32px; }
+  .toc { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px 28px; margin: 24px 0 40px; }
+  .toc h3 { margin-top: 0; color: #0f172a; }
+  .toc ol { margin-left: 16px; }
+  .toc li { margin-bottom: 3px; }
+  .toc a { color: #4f46e5; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .print-btn { position: fixed; bottom: 24px; right: 24px; background: #4f46e5; color: white; border: none; padding: 14px 28px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(79,70,229,0.3); z-index: 999; }
+  .print-btn:hover { background: #4338ca; }
+  .flow-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin: 12px 0; }
+  .flow-box pre { background: transparent; border: none; padding: 0; margin: 0; color: #166534; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">📄 Save as PDF</button>
+
+<h1>Platform Documentation</h1>
+<p class="subtitle">Complete Product Specification — Last Updated: 8 March 2026<br>Stack: React + Vite + TypeScript + Tailwind CSS + Lovable Cloud</p>
+
+<div class="toc">
+<h3>Table of Contents</h3>
+<ol>
+<li><a href="#s1">Overview</a></li>
+<li><a href="#s2">Authentication & Onboarding</a></li>
+<li><a href="#s3">Role System & Navigation</a></li>
+<li><a href="#s4">Customer Flow</a></li>
+<li><a href="#s5">Trader / Agency Flow</a></li>
+<li><a href="#s6">Shared Features</a></li>
+<li><a href="#s7">Database Schema & Security</a></li>
+<li><a href="#s8">Component Architecture</a></li>
+<li><a href="#s9">Design System</a></li>
+<li><a href="#s10">Appendix: Route Map & Flow Diagrams</a></li>
+</ol>
+</div>
+
+<!-- ============================================ -->
+<h2 id="s1">1. Overview</h2>
+
+<p>A mobile-first marketplace connecting <strong>Customers</strong> with <strong>Traders</strong> (individual tradespeople or agencies/companies). The platform supports:</p>
+<ul>
+<li>Service discovery, booking, and payment for customers</li>
+<li>Job intake, crew management, earnings tracking, and payroll for traders</li>
+<li>Agency/company workflows with group management, worker profiles, and automated payouts</li>
+</ul>
+<p>The app renders role-specific experiences from a single codebase using a <code>RoleBasedHome</code> component that checks <code>profile.role</code>.</p>
+
+<h3>1.1 Service Classification</h3>
+<table>
+<tr><th>Category</th><th>Label</th><th>Description</th></tr>
+<tr><td><strong>Cat A</strong></td><td>Quick Fix / Fixed Price</td><td>Standard jobs with predefined pricing (e.g., tap repair, light switch replacement)</td></tr>
+<tr><td><strong>Cat B</strong></td><td>Quote / Project</td><td>Complex jobs requiring a detailed quote from the trader (e.g., bathroom renovation)</td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2 id="s2">2. Authentication & Onboarding</h2>
+
+<h3>2.1 Authentication Pages</h3>
+<table>
+<tr><th>Route</th><th>Page</th><th>Description</th></tr>
+<tr><td><code>/welcome</code></td><td>Splash</td><td>Landing/welcome screen with sign-in/sign-up CTAs</td></tr>
+<tr><td><code>/auth/signup</code></td><td>SignUp</td><td>Email + password registration</td></tr>
+<tr><td><code>/auth/signin</code></td><td>SignIn</td><td>Email + password login</td></tr>
+<tr><td><code>/auth/forgot-password</code></td><td>ForgotPassword</td><td>Password reset request</td></tr>
+<tr><td><code>/reset-password</code></td><td>ResetPassword</td><td>Token-based password reset</td></tr>
+</table>
+<p><strong>Email verification is required</strong> before sign-in (auto-confirm is NOT enabled). Session management is handled via <code>AuthContext</code>.</p>
+
+<h3>2.2 Onboarding Flow</h3>
+<p>Onboarding is role-based and tracked via <code>profiles.onboarding_status</code>:</p>
+<table>
+<tr><th>Status</th><th>Route</th><th>Step</th></tr>
+<tr><td><code>role_selection</code></td><td><code>/onboarding/role</code></td><td>Choose Customer or Trader</td></tr>
+<tr><td><code>profile_setup</code> (customer)</td><td><code>/onboarding/profile</code></td><td>Name, phone, avatar upload</td></tr>
+<tr><td><code>profile_setup</code> (trader)</td><td><code>/onboarding/trader-profile</code></td><td>Multi-step trader setup</td></tr>
+<tr><td><code>completed</code></td><td><code>/</code></td><td>Redirects to role-based home</td></tr>
+</table>
+
+<h4>Trader Onboarding Steps (4 stages):</h4>
+<ol>
+<li><strong>Type Selection</strong> — Choose between "Individual" or "Agency/Company"</li>
+<li><strong>Business Details</strong> — Company name, address, registration info</li>
+<li><strong>Service Selection</strong> — Hierarchical category picker (Cat A = fixed-price, Cat B = quote-based)</li>
+<li><strong>Document Verification</strong> — Government ID, proof of address, trade qualifications, public liability insurance, company registration (agencies only)</li>
+</ol>
+
+<!-- ============================================ -->
+<h2 id="s3">3. Role System & Navigation</h2>
+
+<h3>3.1 Roles</h3>
+<p>Roles are stored in a <strong>separate <code>user_roles</code> table</strong> (not on profiles) to prevent privilege escalation:</p>
+<ul>
+<li><code>customer</code> — End-user booking services</li>
+<li><code>trader</code> — Individual tradesperson or agency owner</li>
+</ul>
+
+<h3>3.2 Trader Types</h3>
+<table>
+<tr><th>Type</th><th>Description</th></tr>
+<tr><td><code>individual</code></td><td>Solo tradesperson who accepts and completes jobs themselves</td></tr>
+<tr><td><code>agency</code></td><td>Company owner who manages groups of workers and assigns jobs</td></tr>
+</table>
+
+<h3>3.3 Bottom Navigation</h3>
+<table>
+<tr><th>Customer</th><th>Route</th><th>Trader</th><th>Route</th></tr>
+<tr><td>Home</td><td><code>/</code></td><td>Home</td><td><code>/</code></td></tr>
+<tr><td>Services</td><td><code>/services</code></td><td>Jobs</td><td><code>/trader/jobs</code></td></tr>
+<tr><td>Bookings</td><td><code>/bookings</code></td><td>Groups</td><td><code>/trader/groups</code></td></tr>
+<tr><td>Chat</td><td><code>/chat</code></td><td>—</td><td>—</td></tr>
+<tr><td>Profile</td><td><code>/profile</code></td><td>Profile</td><td><code>/profile</code></td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2 id="s4">4. Customer Flow</h2>
+
+<h3>4.1 Home Page</h3>
+<ul>
+<li><strong>Header:</strong> Location bar (tappable → address management) + notification bell</li>
+<li><strong>Search Bar:</strong> Full-text search → <code>/search</code></li>
+<li><strong>Category Chips:</strong> Horizontal scroll of service categories</li>
+<li><strong>Hero Banner:</strong> Promotional banner with CTA</li>
+<li><strong>Service Bundles:</strong> Curated package deals (e.g., "Move-in Bundle")</li>
+<li><strong>Service Tabs:</strong> Toggle between Cat A and Cat B</li>
+<li><strong>Provider List:</strong> Top-rated traders with ratings, distance, availability</li>
+<li><strong>Saved Traders:</strong> Quick access to bookmarked traders</li>
+</ul>
+
+<h3>4.2 Booking Flow (5 Steps)</h3>
+<ol>
+<li><strong>Trader Selection</strong> — Choose specific trader or auto-assign</li>
+<li><strong>Date & Time</strong> — Date grid (14 days) + time slots (09:00–17:00)</li>
+<li><strong>Address</strong> — Select saved or enter new address</li>
+<li><strong>Notes & Voice</strong> — Optional text notes + voice note recorder</li>
+<li><strong>Payment & Review</strong> — Payment method, price with 21% BTW (VAT), confirm</li>
+</ol>
+<p><strong>Cancellation:</strong> Requires mandatory text-based reason, recorded in system.</p>
+
+<h3>4.3 Service Discovery</h3>
+<table>
+<tr><th>Route</th><th>Purpose</th></tr>
+<tr><td><code>/services</code></td><td>Full category grid with search</td></tr>
+<tr><td><code>/categories</code></td><td>Browse all categories</td></tr>
+<tr><td><code>/categories/:id</code></td><td>Services within a category</td></tr>
+<tr><td><code>/services/:id</code></td><td>Service details, pricing, reviews</td></tr>
+<tr><td><code>/bundles/:id</code></td><td>Multi-service package details</td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2 id="s5">5. Trader / Agency Flow</h2>
+
+<h3>5.1 Trader Home Page</h3>
+<ul>
+<li><strong>Earnings Card:</strong> Weekly revenue, % change, rating, stats</li>
+<li><strong>Incoming Jobs:</strong> Vertical list of <code>IncomingJobCard</code> components</li>
+<li><strong>Schedule:</strong> Card view (with crew progress) + calendar view toggle</li>
+<li><strong>Earnings Chart:</strong> Area chart with "View more" → <code>/trader/earnings</code></li>
+</ul>
+
+<h3>5.2 Job Management — 3 Tabs</h3>
+
+<h4>Incoming Tab</h4>
+<p>Vertical scrollable list of job cards. Behavior depends on job type and trader type:</p>
+<table>
+<tr><th>Job Type</th><th>Individual Trader</th><th>Agency Trader</th></tr>
+<tr><td><strong>Cat A</strong> (Fixed)</td><td>"Pickup" → direct accept</td><td>"Pickup" → Accept & Assign modal</td></tr>
+<tr><td><strong>Cat B</strong> (Quote)</td><td>"Send Estimate" → inline QuoteBreakdown</td><td>"Send Estimate" → card replaced with CollaborativeQuote</td></tr>
+</table>
+
+<h4>Active Tab</h4>
+<ul>
+<li>Job count badge + "Upcoming" header</li>
+<li>Crew member statuses: En Route → Arrived → Working → Done</li>
+<li>Action buttons: Message Team + Remind</li>
+</ul>
+
+<h4>Completed Tab</h4>
+<ul>
+<li>Assignment badges (group name, individual names, overflow "+X")</li>
+<li>Expandable: customer, duration, description, per-member hours + earnings</li>
+</ul>
+
+<h3>5.3 Accept & Assign Flow (Cat A — Agency)</h3>
+<p>Bottom-sheet modal with 3 steps:</p>
+<ol>
+<li><strong>Choose:</strong> Assign to Group or search/select Individuals</li>
+<li><strong>Select Members:</strong> Review group members with checkboxes (all pre-selected)</li>
+<li><strong>Confirm:</strong> Summary with avatars → accept + assign</li>
+</ol>
+
+<h3 style="color:#4f46e5;">5.4 Agency Quote Flow (Cat B — CollaborativeQuote) ★</h3>
+<p><strong>This is the core quoting mechanism for agencies.</strong> When an agency clicks "Send Estimate" on a Cat B job, the job card is <strong>replaced inline</strong> with a multi-step flow:</p>
+
+<h4>Step 1: Choose Assignment</h4>
+<ul>
+<li><strong>Assign to Group:</strong> Select from existing groups → proceeds to member review</li>
+<li><strong>Assign to Individuals:</strong> Multi-select search with chip tags</li>
+</ul>
+
+<h4>Step 2: Review Group Members</h4>
+<ul>
+<li>All members shown with checkboxes (pre-selected)</li>
+<li>Group name + selected count in header badge</li>
+<li>Deselect specific members as needed</li>
+</ul>
+
+<h4>Step 3: Confirm Assignment</h4>
+<ul>
+<li>Summary of assigned workers with "Will estimate" badge</li>
+<li>Info banner: workers will receive notification to submit item estimates</li>
+<li><strong>"Assign & Request"</strong> button sends the estimation request</li>
+</ul>
+
+<h4>Step 4: Waiting</h4>
+<ul>
+<li>Animated worker avatars + pulse progress bar</li>
+<li>"Collecting estimates…" with worker count</li>
+</ul>
+
+<h4>Step 5: Review & Send Quote</h4>
+<p>The review screen has these sections:</p>
+
+<p><strong>A. Average Estimate Banner</strong> — Shows calculated average across all submissions</p>
+
+<p><strong>B. Worker Item Estimates</strong> — Expandable per-worker cards showing itemized materials with quantities, prices, and totals</p>
+
+<p><strong>C. Final Materials (Averaged & Editable)</strong></p>
+<ul>
+<li>System auto-averages all worker estimates (same items → averaged qty/price)</li>
+<li>Agency can edit descriptions, quantities, unit prices</li>
+<li>Add/remove material line items</li>
+</ul>
+
+<p><strong>D. Labour Requirements (Type + Quantity Only)</strong></p>
+<ul>
+<li>Agency adds labour type (e.g., Plumber, Electrician, Helper)</li>
+<li>Sets <strong>quantity only</strong> (number of workers needed)</li>
+<li><strong>No manual rate entry</strong> — base pay auto-resolved from group config:
+  <ul>
+    <li>£30/hr for skilled trades (default)</li>
+    <li>£25/hr for helpers/labourers</li>
+    <li>Configured via <code>/trader/base-pay</code></li>
+  </ul>
+</li>
+<li>Each line: role, count, auto base pay, line total</li>
+</ul>
+
+<p><strong>E. Totals Summary</strong> — Materials total + labour breakdown per type = Grand Total</p>
+
+<p><strong>F. Message</strong> — Optional text + voice note to customer</p>
+
+<p><strong>G. Submit</strong> — "Send Quote to Customer" (disabled if total ≤ 0)</p>
+
+<h3>5.5 Individual Trader Quote (Cat B)</h3>
+<p>Inline <code>QuoteBreakdown</code> component:</p>
+<ol>
+<li>Materials: add/remove items (description, qty, unit price)</li>
+<li>Labour: hours + hourly rate</li>
+<li>Message: optional text + voice note</li>
+<li>Total = materials + (hours × rate)</li>
+</ol>
+
+<h3>5.6 Worker-Side: Company Job Cards</h3>
+<p>Workers in an agency see company-assigned jobs with:</p>
+<ul>
+<li>Company name badge + "Assigned" shield</li>
+<li>Auto-accept timer (5 min countdown)</li>
+<li>Budget hidden from workers</li>
+<li>Masked customer location (area only)</li>
+<li>Item estimation submission via <code>WorkerQuoteRequest</code></li>
+</ul>
+
+<h3>5.7 Revenue & Earnings</h3>
+<ul>
+<li>Revenue summary with % change</li>
+<li>Quick stats: Gross Income | Worker Pay | Platform Fees</li>
+<li>Area chart with Week/Month/Year toggle</li>
+<li>Unified transaction ledger with tags (Job Payment, Salary, Platform Fee)</li>
+</ul>
+
+<h3>5.8 Group Management</h3>
+
+<h4>Group Detail (4 Tabs)</h4>
+<table>
+<tr><th>Tab</th><th>Content</th></tr>
+<tr><td>Performance</td><td>Group stats, links to worker profiles</td></tr>
+<tr><td>Members</td><td>Member list with add/remove management</td></tr>
+<tr><td>Base Pay</td><td>Universal or custom hourly rates; toggleable per member</td></tr>
+<tr><td>Payouts</td><td>Financial overview (Income, Payouts, Net Profit, Margin %) + transaction ledger</td></tr>
+</table>
+
+<h4>Worker Payouts</h4>
+<ul>
+<li>Current payroll cycle with draft amounts</li>
+<li>Schedule: Manual / Weekly / Bi-weekly / Monthly</li>
+<li>Past payout history</li>
+<li>Manual trigger + skip-week logic</li>
+</ul>
+
+<h4>Base Pay Configuration</h4>
+<ul>
+<li>Global hourly rates per service category</li>
+<li>Expandable category accordions with per-service editing</li>
+<li>Bulk update buttons (£20/£25/£30/£35)</li>
+<li>Sticky Save/Discard bar with change detection</li>
+<li>Validation: all rates must be > £0</li>
+</ul>
+
+<!-- ============================================ -->
+<h2 id="s6">6. Shared Features</h2>
+
+<h3>6.1 Chat</h3>
+<p>Real-time messaging — Customer ↔ Trader communication</p>
+
+<h3>6.2 Notifications</h3>
+<p>Role-specific: job updates, payment confirmations, estimation requests, system alerts</p>
+
+<h3>6.3 Profile Management</h3>
+<table>
+<tr><th>Route</th><th>Feature</th></tr>
+<tr><td><code>/profile</code></td><td>Profile hub with role-specific menu</td></tr>
+<tr><td><code>/profile/details</code></td><td>Personal information editing</td></tr>
+<tr><td><code>/profile/address</code></td><td>Address management</td></tr>
+<tr><td><code>/profile/security</code></td><td>Security hub (password, 2FA, sessions)</td></tr>
+<tr><td><code>/profile/payments</code></td><td>Payment methods (customer)</td></tr>
+<tr><td><code>/profile/payouts</code></td><td>Payout methods — Bank/IBAN (trader)</td></tr>
+<tr><td><code>/profile/tax</code></td><td>Company & tax info (trader)</td></tr>
+<tr><td><code>/profile/notifications</code></td><td>Notification preferences</td></tr>
+<tr><td><code>/profile/language</code></td><td>Language & region settings</td></tr>
+<tr><td><code>/profile/favourites</code></td><td>Saved traders (customer)</td></tr>
+<tr><td><code>/profile/help</code></td><td>Help centre</td></tr>
+<tr><td><code>/profile/feedback</code></td><td>Submit feedback</td></tr>
+<tr><td><code>/profile/legal</code></td><td>Legal documents</td></tr>
+<tr><td><code>/profile/verification</code></td><td>KYC verification status</td></tr>
+</table>
+
+<h3>6.4 Avatar System</h3>
+<p><strong>boring-avatars</strong> (beam variant) as fallback. 7-color palette. Supabase Storage for custom uploads.</p>
+
+<h3>6.5 Voice Notes</h3>
+<p>Available in booking (customer) and quote flows (trader). <code>VoiceNoteRecorder</code> component with recording, playback, waveform.</p>
+
+<!-- ============================================ -->
+<h2 id="s7">7. Database Schema & Security</h2>
+
+<h3>7.1 Tables</h3>
+
+<h4>profiles</h4>
+<table>
+<tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+<tr><td>id</td><td>uuid</td><td>PK, auto-generated</td></tr>
+<tr><td>user_id</td><td>uuid</td><td>References auth.users</td></tr>
+<tr><td>full_name</td><td>text</td><td>Nullable</td></tr>
+<tr><td>email</td><td>text</td><td>Nullable</td></tr>
+<tr><td>phone</td><td>text</td><td>Nullable</td></tr>
+<tr><td>avatar_url</td><td>text</td><td>Nullable</td></tr>
+<tr><td>role</td><td>app_role</td><td><code>customer</code> or <code>trader</code></td></tr>
+<tr><td>trader_type</td><td>trader_type</td><td><code>individual</code> or <code>agency</code></td></tr>
+<tr><td>street, city, postcode</td><td>text</td><td>Address fields</td></tr>
+<tr><td>date_of_birth</td><td>date</td><td>Nullable</td></tr>
+<tr><td>onboarding_status</td><td>enum</td><td><code>role_selection</code> → <code>profile_setup</code> → <code>completed</code></td></tr>
+<tr><td>kyc_status</td><td>enum</td><td><code>pending</code> / <code>verified</code> / <code>failed</code> / <code>manual_review</code></td></tr>
+</table>
+
+<h4>user_roles</h4>
+<table>
+<tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+<tr><td>id</td><td>uuid</td><td>PK</td></tr>
+<tr><td>user_id</td><td>uuid</td><td>References auth.users</td></tr>
+<tr><td>role</td><td>app_role</td><td><code>customer</code> or <code>trader</code></td></tr>
+</table>
+
+<h4>saved_traders</h4>
+<table>
+<tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+<tr><td>id</td><td>uuid</td><td>PK</td></tr>
+<tr><td>user_id</td><td>uuid</td><td>Customer saving</td></tr>
+<tr><td>trader_id</td><td>text</td><td>Trader being saved</td></tr>
+</table>
+
+<h4>feedback</h4>
+<table>
+<tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+<tr><td>id</td><td>uuid</td><td>PK</td></tr>
+<tr><td>user_id</td><td>uuid</td><td>Submitter</td></tr>
+<tr><td>rating</td><td>integer</td><td>Required</td></tr>
+<tr><td>message</td><td>text</td><td>Default empty</td></tr>
+</table>
+
+<h3>7.2 Enums</h3>
+<ul>
+<li><code>app_role</code>: customer, trader</li>
+<li><code>trader_type</code>: individual, agency</li>
+<li><code>onboarding_status</code>: role_selection, profile_setup, completed</li>
+<li><code>kyc_status</code>: pending, verified, failed, manual_review</li>
+</ul>
+
+<h3>7.3 Security</h3>
+<ul>
+<li><code>has_role()</code> — Security definer function for RLS checks without recursion</li>
+<li>All tables have Row-Level Security (RLS) enabled</li>
+<li>Users can only access their own data</li>
+<li>Public trader profiles visible only when onboarding is completed</li>
+</ul>
+
+<!-- ============================================ -->
+<h2 id="s8">8. Component Architecture</h2>
+
+<h3>8.1 Job Card Components</h3>
+<table>
+<tr><th>Component</th><th>Used In</th><th>Purpose</th></tr>
+<tr><td><code>IncomingJobCard</code></td><td>Home, Jobs</td><td>Expandable job card with 3 view modes</td></tr>
+<tr><td><code>ActiveJobCard</code></td><td>Home, Jobs</td><td>Active job with crew progress</td></tr>
+<tr><td><code>CompanyJobCard</code></td><td>Jobs (workers)</td><td>Agency-assigned job for workers</td></tr>
+<tr><td><code>CollaborativeQuote</code></td><td>Jobs (agency)</td><td>Multi-step agency quote flow</td></tr>
+<tr><td><code>QuoteBreakdown</code></td><td>Jobs (individual)</td><td>Inline materials + labour quote</td></tr>
+<tr><td><code>WorkerQuoteRequest</code></td><td>CompanyJobCard</td><td>Worker estimation submission</td></tr>
+<tr><td><code>QuoteMessage</code></td><td>Quote components</td><td>Text + voice note attachment</td></tr>
+</table>
+
+<h3>8.2 IncomingJobCard View Modes</h3>
+<table>
+<tr><th>Mode</th><th>Description</th></tr>
+<tr><td><code>individual</code></td><td>Full details, inline QuoteBreakdown for Cat B, direct Pickup for Cat A</td></tr>
+<tr><td><code>agency</code></td><td>Full details, CollaborativeQuote for Cat B, Assign modal for Cat A</td></tr>
+<tr><td><code>agency-worker</code></td><td>Masked location, hidden budget, auto-accept timer</td></tr>
+</table>
+
+<!-- ============================================ -->
+<h2 id="s9">9. Design System</h2>
+
+<h3>9.1 Theme</h3>
+<p>CSS custom properties with HSL values. Full dark mode via <code>next-themes</code>. Semantic tokens for all colors.</p>
+
+<h3>9.2 Color Conventions</h3>
+<table>
+<tr><th>Context</th><th>Color</th></tr>
+<tr><td>Income / Positive</td><td><code>hsl(142, 70%, 45%)</code> — green</td></tr>
+<tr><td>Expenses / Negative</td><td><code>hsl(var(--destructive))</code> — red</td></tr>
+<tr><td>Warning / Urgency</td><td><code>hsl(25, 90%, 55%)</code> — amber</td></tr>
+<tr><td>Primary actions</td><td><code>bg-primary text-primary-foreground</code></td></tr>
+</table>
+
+<h3>9.3 Crew Status Colors</h3>
+<table>
+<tr><th>Status</th><th>Icon</th><th>Color</th></tr>
+<tr><td>En Route</td><td>Navigation</td><td>Amber</td></tr>
+<tr><td>Arrived</td><td>MapPinCheck</td><td>Blue (primary)</td></tr>
+<tr><td>Working</td><td>Wrench</td><td>Orange</td></tr>
+<tr><td>Done</td><td>CircleCheck</td><td>Green</td></tr>
+</table>
+
+<h3>9.4 UI Patterns</h3>
+<ul>
+<li><strong>Card shadow:</strong> <code>card-shadow</code> utility for elevation</li>
+<li><strong>Border radius:</strong> <code>rounded-2xl</code> standard</li>
+<li><strong>Bottom-sheet modals:</strong> Multi-step flows (Accept & Assign)</li>
+<li><strong>Inline expansion:</strong> Job card details</li>
+<li><strong>Inline replacement:</strong> Agency quote replaces job card</li>
+<li><strong>Chip multi-select:</strong> Worker assignment</li>
+<li><strong>Sticky action bars:</strong> Save/Discard for config pages</li>
+</ul>
+
+<!-- ============================================ -->
+<h2 id="s10">10. Appendix</h2>
+
+<h3>10.1 Complete Route Map</h3>
+<pre><code>/welcome                          → Splash
+/auth/signup                      → Sign Up
+/auth/signin                      → Sign In
+/auth/forgot-password             → Forgot Password
+/reset-password                   → Reset Password
+
+/onboarding/role                  → Role Selection
+/onboarding/profile               → Customer Profile Setup
+/onboarding/trader-profile        → Trader Profile Setup (4 steps)
+
+/                                 → Role-based Home
+/search                           → Search
+/services                         → Service Categories
+/services/:id                     → Service Detail
+/services/:id/book                → Book Service (5 steps)
+/categories                       → All Categories
+/categories/:id                   → Category Detail
+/bundles/:id                      → Bundle Detail
+/traders/:id                      → Trader Profile
+/traders/:id/services             → Trader's Services
+/jobs                             → My Jobs (Customer)
+/jobs/post                        → Post a Job
+/bookings                         → Bookings
+
+/trader/jobs                      → Job Management (3 tabs)
+/trader/services                  → Manage Services
+/trader/earnings                  → Revenue & Transactions
+/trader/groups                    → Groups List
+/trader/groups/:id                → Group Detail (4 tabs)
+/trader/workers/:id               → Worker Profile
+/trader/paychecks                 → Worker Payouts
+/trader/base-pay                  → Base Pay Configuration
+
+/chat                             → Messaging
+/notifications                    → Notifications
+/profile                          → Profile Hub
+/profile/details                  → My Details
+/profile/address                  → Address Management
+/profile/security                 → Security Settings
+/profile/payments                 → Payment Methods (Customer)
+/profile/payouts                  → Payout Methods (Trader)
+/profile/tax                      → Company & Tax (Trader)
+/profile/verification             → KYC Verification</code></pre>
+
+<h3>10.2 Agency Quote Flow Diagram</h3>
+<div class="flow-box">
+<pre>Customer posts Cat B job
+       ↓
+Agency sees job in Incoming tab
+       ↓
+Agency clicks "Send Estimate"
+       ↓
+Card REPLACED inline with CollaborativeQuote
+       ↓
+Step 1: Choose → Group or Individuals
+       ↓
+Step 2: Review members / Confirm selection
+       ↓
+Step 3: Confirm → "Assign & Request"
+       ↓
+Workers receive estimation request
+       ↓
+Step 4: Waiting… (collecting estimates)
+       ↓
+Workers submit itemized material estimates
+       ↓
+Step 5: Agency Review
+  ├── View individual estimates (expandable)
+  ├── System auto-averages all estimates
+  ├── Agency edits final materials
+  ├── Agency adds labour types + quantity
+  │   (base pay auto-resolved, no manual rates)
+  └── Send final quote to customer</pre>
+</div>
+
+<h3>10.3 Accept & Assign Flow (Cat A)</h3>
+<div class="flow-box">
+<pre>Agency sees Cat A job → clicks "Pickup"
+       ↓
+Bottom-sheet modal opens
+       ↓
+Step 1: Choose Group or Individuals
+       ↓
+Step 2: Select/review members
+       ↓
+Step 3: Confirm → Job accepted & assigned</pre>
+</div>
+
+<h3>10.4 Individual Quote Flow (Cat B)</h3>
+<div class="flow-box">
+<pre>Individual sees Cat B job → clicks "Send Estimate"
+       ↓
+Card expands with inline QuoteBreakdown
+       ↓
+Add materials (desc, qty, unit price)
+       ↓
+Set labour hours + rate
+       ↓
+Optional message + voice note
+       ↓
+Submit → Quote sent to customer</pre>
+</div>
+
+<hr>
+<p style="text-align:center;color:#94a3b8;font-size:12px;margin-top:40px;">
+  Platform Documentation v2.0 — Generated 8 March 2026
+</p>
+
+</body>
+</html>

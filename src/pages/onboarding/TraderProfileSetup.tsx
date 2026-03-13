@@ -1,0 +1,614 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  ArrowLeft, User, MapPin, Building2, Camera, FileText, Shield,
+  CheckCircle2, ChevronRight, Upload, AlertTriangle, Fingerprint,
+  CreditCard, HardHat, Scale, ClipboardCheck, ChevronDown,
+} from "lucide-react";
+import { toast } from "sonner";
+import { serviceCategories, catAServices, catBServices, getAllServices } from "@/data/services";
+import { EmojiIcon, getEmojiIconColors, categoryIconMap, categoryColorMap, iconMap } from "@/lib/icons";
+
+const mainSteps = ["Business", "Services", "Documents"];
+
+interface DocumentRequirement {
+  id: string;
+  label: string;
+  description: string;
+  icon: any;
+  mandatory: boolean;
+  acceptedFormats: string;
+  helpText: string;
+}
+
+const requiredDocuments: DocumentRequirement[] = [
+  {
+    id: "gov-id",
+    label: "Government-Issued Photo ID",
+    description: "Valid passport or UK driving licence",
+    icon: CreditCard,
+    mandatory: true,
+    acceptedFormats: "JPG, PNG, PDF",
+    helpText: "Must be current and not expired. Used to verify your identity and right to work in the UK.",
+  },
+  {
+    id: "proof-address",
+    label: "Proof of Address",
+    description: "Utility bill or bank statement (last 3 months)",
+    icon: MapPin,
+    mandatory: true,
+    acceptedFormats: "JPG, PNG, PDF",
+    helpText: "Must be dated within the last 3 months showing your name and current address.",
+  },
+  {
+    id: "right-to-work",
+    label: "Right to Work in UK",
+    description: "Share code, visa, or UK/Irish passport",
+    icon: Scale,
+    mandatory: true,
+    acceptedFormats: "JPG, PNG, PDF",
+    helpText: "Under the Immigration, Asylum and Nationality Act 2006, we must verify your right to work in the UK before you can take on jobs.",
+  },
+  {
+    id: "public-liability",
+    label: "Public Liability Insurance",
+    description: "Minimum £1M cover required",
+    icon: Shield,
+    mandatory: true,
+    acceptedFormats: "PDF, JPG, PNG",
+    helpText: "Public liability insurance protects you and your customers. Most platforms and clients require a minimum of £1,000,000 cover.",
+  },
+  {
+    id: "trade-qualifications",
+    label: "Trade Qualifications / Certifications",
+    description: "NVQ, City & Guilds, Gas Safe, NICEIC, CSCS, etc.",
+    icon: ClipboardCheck,
+    mandatory: true,
+    acceptedFormats: "PDF, JPG, PNG",
+    helpText: "Upload your relevant trade qualifications. For regulated trades: Gas Safe registration (gas work), NICEIC/Part P (electrical), CSCS card (construction).",
+  },
+  {
+    id: "dbs-check",
+    label: "DBS Certificate",
+    description: "Basic or Enhanced Disclosure & Barring Service check",
+    icon: Fingerprint,
+    mandatory: true,
+    acceptedFormats: "PDF, JPG, PNG",
+    helpText: "A DBS check ensures customer safety. If you don't have one, you can apply at gov.uk/request-copy-criminal-record. Must be dated within the last 12 months.",
+  },
+  {
+    id: "selfie-verification",
+    label: "Selfie for Identity Match",
+    description: "A clear photo of your face for biometric verification",
+    icon: Camera,
+    mandatory: true,
+    acceptedFormats: "JPG, PNG",
+    helpText: "We'll match this photo against your government ID to confirm your identity. Please ensure your face is clearly visible with good lighting.",
+  },
+  {
+    id: "professional-indemnity",
+    label: "Professional Indemnity Insurance",
+    description: "Recommended for advisory/design trades",
+    icon: HardHat,
+    mandatory: false,
+    acceptedFormats: "PDF, JPG, PNG",
+    helpText: "Required if your work involves advice, design, or project management. Protects against claims of negligent advice or design errors.",
+  },
+];
+
+const TraderProfileSetup = () => {
+  const navigate = useNavigate();
+  const { profile, updateProfile, refreshProfile } = useAuth();
+  const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  // trader_type removed — no longer selecting individual vs agency
+
+  // Step 0 - Business
+  const [businessName, setBusinessName] = useState("");
+  const [fullName, setFullName] = useState(profile?.full_name || "");
+  const [street, setStreet] = useState(profile?.street || "");
+  const [city, setCity] = useState(profile?.city || "");
+  const [postcode, setPostcode] = useState(profile?.postcode || "");
+  const [yearsExperience, setYearsExperience] = useState("");
+
+  // Step 1 - Services (category → sub-services)
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+
+  const categoriesWithServices = serviceCategories
+    .filter((c) => c.id !== "all")
+    .map((cat) => ({
+      ...cat,
+      services: getAllServices().filter((s) => s.categoryId === cat.id),
+    }));
+
+  const toggleService = (serviceId: string) => {
+    setSelectedServices((prev) =>
+      prev.includes(serviceId) ? prev.filter((s) => s !== serviceId) : [...prev, serviceId]
+    );
+  };
+
+  const toggleAllInCategory = (categoryId: string) => {
+    const catServiceIds = getAllServices()
+      .filter((s) => s.categoryId === categoryId)
+      .map((s) => s.id);
+    const allSelected = catServiceIds.every((id) => selectedServices.includes(id));
+    if (allSelected) {
+      setSelectedServices((prev) => prev.filter((id) => !catServiceIds.includes(id)));
+    } else {
+      setSelectedServices((prev) => [...new Set([...prev, ...catServiceIds])]);
+    }
+  };
+
+  const getSelectedCountForCategory = (categoryId: string) => {
+    return getAllServices()
+      .filter((s) => s.categoryId === categoryId)
+      .filter((s) => selectedServices.includes(s.id)).length;
+  };
+
+  // Step 2 - Documents
+  const [docSubStep, setDocSubStep] = useState(0);
+  const [uploadedDocs, setUploadedDocs] = useState<Record<string, { fileName: string; uploadedAt: string }>>({});
+
+  const mandatoryDocs = requiredDocuments.filter((d) => d.mandatory);
+  const optionalDocs = requiredDocuments.filter((d) => !d.mandatory);
+  const allMandatoryUploaded = mandatoryDocs.every((d) => uploadedDocs[d.id]);
+  const currentDoc = step === 2 ? requiredDocuments[docSubStep] : null;
+
+  const canContinue = () => {
+    if (step === 0) return fullName.trim() && city.trim() && postcode.trim();
+    if (step === 1) return selectedServices.length > 0;
+    if (step === 2) return allMandatoryUploaded;
+    return false;
+  };
+
+  const handleDocUpload = (docId: string) => {
+    // Simulate file upload
+    setUploadedDocs((prev) => ({
+      ...prev,
+      [docId]: {
+        fileName: `${docId}_scan.pdf`,
+        uploadedAt: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+      },
+    }));
+    toast.success("Document uploaded successfully!");
+
+    // Auto-advance to next un-uploaded mandatory doc after a brief pause
+    setTimeout(() => {
+      const nextUnuploaded = requiredDocuments.findIndex(
+        (d, i) => i > docSubStep && d.mandatory && !uploadedDocs[d.id]
+      );
+      if (nextUnuploaded !== -1) {
+        setDocSubStep(nextUnuploaded);
+      }
+    }, 600);
+  };
+
+  const handleContinue = async () => {
+    if (step < 2) {
+      setStep(step + 1);
+      return;
+    }
+
+    // Final step — save profile
+    setLoading(true);
+    const { error } = await updateProfile({
+      full_name: fullName.trim(),
+      street: street.trim(),
+      city: city.trim(),
+      postcode: postcode.trim(),
+      onboarding_status: "completed",
+    });
+    setLoading(false);
+    if (error) {
+      toast.error("Something went wrong");
+    } else {
+      await refreshProfile();
+      toast.success("Welcome aboard! 🎉");
+      navigate("/", { replace: true });
+    }
+  };
+
+  const handleBack = () => {
+    if (step === 2 && docSubStep > 0) {
+      setDocSubStep(docSubStep - 1);
+    } else if (step > 0) {
+      setStep(step - 1);
+    } else {
+      navigate("/onboarding/role");
+    }
+  };
+
+  const uploadedMandatoryCount = mandatoryDocs.filter((d) => uploadedDocs[d.id]).length;
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-muted/50 p-4">
+      <div className="relative mx-auto w-full max-w-[390px] h-[844px] rounded-[3rem] border-[6px] border-foreground/90 bg-background shadow-2xl overflow-hidden">
+        <div className="absolute left-1/2 top-0 z-50 -translate-x-1/2">
+          <div className="h-[34px] w-[126px] rounded-b-[1.2rem] bg-foreground/90" />
+        </div>
+
+        <div className="flex h-full flex-col px-6 pt-14">
+          <button onClick={handleBack} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+
+          <h1 className="mb-1 text-2xl font-bold text-foreground font-heading">
+            {step === 0 ? "Business Details" : step === 1 ? "Your Services" : "Document Upload"}
+          </h1>
+          <p className="mb-2 text-sm text-muted-foreground">
+            {step === 0
+              ? "Tell us about your business"
+              : step === 1
+              ? "Select the services you offer"
+              : `Upload required documents to verify your account (${uploadedMandatoryCount}/${mandatoryDocs.length})`}
+          </p>
+
+          {/* Main step progress */}
+          <div className="mb-4 flex gap-2">
+            {mainSteps.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 flex-1 rounded-full transition-all ${
+                  i <= step ? "bg-primary" : "bg-muted"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Step 0: Business details */}
+          {step === 0 && (
+            <div className="flex flex-1 flex-col gap-3.5 overflow-y-auto pb-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Full name *</label>
+                <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5">
+                  <User className="h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="text" placeholder="John Smith" value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Business name</label>
+                <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5">
+                  <Building2 className="h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="text" placeholder="Smith Plumbing Ltd" value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Years of experience</label>
+                <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5">
+                  <Shield className="h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="number" placeholder="e.g. 5" value={yearsExperience}
+                    onChange={(e) => setYearsExperience(e.target.value)}
+                    className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Street + house number</label>
+                <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5">
+                  <MapPin className="h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="text" placeholder="123 Main Street" value={street}
+                    onChange={(e) => setStreet(e.target.value)}
+                    className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Postcode *</label>
+                  <div className="flex items-center rounded-2xl border border-border bg-card px-4 py-3.5">
+                    <input
+                      type="text" placeholder="SW1A 1AA" value={postcode}
+                      onChange={(e) => setPostcode(e.target.value)}
+                      className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                    />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">City *</label>
+                  <div className="flex items-center rounded-2xl border border-border bg-card px-4 py-3.5">
+                    <input
+                      type="text" placeholder="London" value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 1: Category → Service selection */}
+          {step === 1 && (
+            <div className="flex flex-1 flex-col gap-3 overflow-y-auto pb-4">
+              <p className="text-xs text-muted-foreground">
+                Select categories and the specific services you offer · {selectedServices.length} services selected
+              </p>
+
+              <div className="flex flex-col gap-2.5">
+                {categoriesWithServices.map((cat) => {
+                  const selectedCount = getSelectedCountForCategory(cat.id);
+                  const totalCount = cat.services.length;
+                  const allSelected = totalCount > 0 && selectedCount === totalCount;
+                  const someSelected = selectedCount > 0;
+                  const isExpanded = expandedCategory === cat.id;
+
+                  return (
+                    <div key={cat.id} className="rounded-2xl border-2 border-border bg-card overflow-hidden transition-all">
+                      {/* Category header */}
+                      <button
+                        onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
+                        className="flex w-full items-center gap-3 p-3.5 text-left active:bg-muted/50 transition-colors"
+                      >
+                        {(() => { const n = categoryIconMap[cat.id] || "wrench"; const I = iconMap[n]; const c = categoryColorMap[cat.id]; return I ? <I size={24} weight="regular" className={c?.color || "text-muted-foreground"} /> : null; })()}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-bold text-foreground">{cat.label}</h4>
+                            {someSelected && (
+                              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                                {selectedCount}/{totalCount}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-muted-foreground">{totalCount} services available</p>
+                        </div>
+                        <ChevronDown className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                      </button>
+
+                      {/* Expanded: sub-services */}
+                      {isExpanded && (
+                        <div className="border-t border-border">
+                          {/* Select all toggle */}
+                          <button
+                            onClick={() => toggleAllInCategory(cat.id)}
+                            className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left border-b border-border active:bg-muted/50"
+                          >
+                            <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
+                              allSelected ? "border-primary bg-primary" : "border-border"
+                            }`}>
+                              {allSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />}
+                            </div>
+                            <span className="text-xs font-bold text-primary">Select all {cat.label} services</span>
+                          </button>
+
+                          {cat.services.map((service) => {
+                            const isSelected = selectedServices.includes(service.id);
+                            return (
+                              <button
+                                key={service.id}
+                                onClick={() => toggleService(service.id)}
+                                className="flex w-full items-center gap-3 px-4 py-3 text-left border-b border-border last:border-b-0 active:bg-muted/50 transition-colors"
+                              >
+                                <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
+                                  isSelected ? "border-primary bg-primary" : "border-border"
+                                }`}>
+                                  {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />}
+                                </div>
+                                <EmojiIcon emoji={service.icon} size={18} weight="regular" colorize />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-semibold text-foreground">{service.name}</p>
+                                  <p className="text-[10px] text-muted-foreground truncate">{service.description}</p>
+                                </div>
+                                <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[8px] font-bold text-secondary-foreground">
+                                  {service.category === "catA" ? "Quick" : "Project"}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Document upload — one at a time */}
+          {step === 2 && currentDoc && (
+            <div className="flex flex-1 flex-col overflow-y-auto pb-4">
+              {/* Document sub-step progress */}
+              <div className="mb-4 flex gap-1">
+                {requiredDocuments.map((doc, i) => (
+                  <button
+                    key={doc.id}
+                    onClick={() => setDocSubStep(i)}
+                    className={`h-1.5 flex-1 rounded-full transition-all ${
+                      uploadedDocs[doc.id]
+                        ? "bg-primary"
+                        : i === docSubStep
+                        ? "bg-primary/40"
+                        : "bg-muted"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Current document card */}
+              <div className="flex flex-col gap-4">
+                <div className={`flex items-center gap-3 rounded-2xl p-4 ${
+                  uploadedDocs[currentDoc.id] ? "bg-primary/5" : "bg-accent/50"
+                }`}>
+                  <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${
+                    uploadedDocs[currentDoc.id] ? "bg-primary" : "bg-muted"
+                  }`}>
+                    <currentDoc.icon className={`h-7 w-7 ${
+                      uploadedDocs[currentDoc.id] ? "text-primary-foreground" : "text-muted-foreground"
+                    }`} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-foreground">{currentDoc.label}</h3>
+                      {currentDoc.mandatory && !uploadedDocs[currentDoc.id] && (
+                        <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[9px] font-bold text-destructive">
+                          Required
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{currentDoc.description}</p>
+                  </div>
+                  {uploadedDocs[currentDoc.id] && (
+                    <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" />
+                  )}
+                </div>
+
+                {/* Info box */}
+                <div className="rounded-2xl border border-border bg-card p-4">
+                  <div className="flex items-start gap-2.5">
+                    <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
+                    <div>
+                      <p className="text-xs text-foreground leading-relaxed">{currentDoc.helpText}</p>
+                      <p className="mt-2 text-[10px] text-muted-foreground">
+                        Accepted formats: {currentDoc.acceptedFormats}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upload area */}
+                {uploadedDocs[currentDoc.id] ? (
+                  <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-6">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <CheckCircle2 className="h-10 w-10 text-primary" />
+                      <p className="text-sm font-bold text-foreground">Uploaded</p>
+                      <p className="text-xs text-muted-foreground">{uploadedDocs[currentDoc.id].fileName}</p>
+                      <p className="text-[10px] text-muted-foreground">{uploadedDocs[currentDoc.id].uploadedAt}</p>
+                      <button
+                        onClick={() => handleDocUpload(currentDoc.id)}
+                        className="mt-2 text-xs font-semibold text-primary"
+                      >
+                        Replace file
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleDocUpload(currentDoc.id)}
+                    className="rounded-2xl border-2 border-dashed border-border bg-card p-8 transition-all active:scale-[0.98] active:border-primary"
+                  >
+                    <div className="flex flex-col items-center gap-3 text-center">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent">
+                        <Upload className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-foreground">
+                          Tap to scan or upload
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          Take a photo or select a file from your device
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                )}
+
+                {/* Navigation between docs */}
+                <div className="flex items-center gap-2">
+                  {docSubStep > 0 && (
+                    <button
+                      onClick={() => setDocSubStep(docSubStep - 1)}
+                      className="flex-1 rounded-2xl border border-border bg-card py-3 text-sm font-semibold text-foreground transition-all active:scale-[0.98]"
+                    >
+                      Previous
+                    </button>
+                  )}
+                  {docSubStep < requiredDocuments.length - 1 && (
+                    <button
+                      onClick={() => setDocSubStep(docSubStep + 1)}
+                      className={`flex-1 rounded-2xl py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
+                        uploadedDocs[currentDoc.id]
+                          ? "bg-primary text-primary-foreground"
+                          : "border border-border bg-card text-muted-foreground"
+                      }`}
+                    >
+                      {uploadedDocs[currentDoc.id] ? "Next Document" : "Skip for now"}
+                    </button>
+                  )}
+                </div>
+
+                {/* Document checklist */}
+                <div>
+                  <h4 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    All Documents ({Object.keys(uploadedDocs).length}/{requiredDocuments.length})
+                  </h4>
+                  <div className="rounded-2xl bg-card card-shadow overflow-hidden">
+                    {requiredDocuments.map((doc, i) => {
+                      const isUploaded = !!uploadedDocs[doc.id];
+                      const isCurrent = i === docSubStep;
+                      const DocIcon = doc.icon;
+                      return (
+                        <button
+                          key={doc.id}
+                          onClick={() => setDocSubStep(i)}
+                          className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors ${
+                            isCurrent ? "bg-accent/60" : "active:bg-muted/60"
+                          } ${i < requiredDocuments.length - 1 ? "border-b border-border" : ""}`}
+                        >
+                          <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                            isUploaded ? "bg-primary" : "bg-muted"
+                          }`}>
+                            {isUploaded ? (
+                              <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />
+                            ) : (
+                              <DocIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-[11px] font-semibold truncate ${isUploaded ? "text-foreground" : "text-muted-foreground"}`}>
+                              {doc.label}
+                            </p>
+                          </div>
+                          {doc.mandatory && !isUploaded && (
+                            <span className="shrink-0 text-[8px] font-bold text-destructive">REQ</span>
+                          )}
+                          {!doc.mandatory && !isUploaded && (
+                            <span className="shrink-0 text-[8px] font-bold text-muted-foreground">OPT</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Continue button */}
+          <div className="pb-12">
+            {step === 2 && !allMandatoryUploaded && (
+              <p className="mb-2 text-center text-[11px] text-destructive font-semibold">
+                All mandatory documents must be uploaded to continue
+              </p>
+            )}
+            <button
+              onClick={handleContinue}
+              disabled={!canContinue() || loading}
+              className="w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98] disabled:opacity-50"
+            >
+              {loading
+                ? "Saving..."
+                : step === 2
+                ? "Complete Setup"
+                : "Continue"}
+            </button>
+          </div>
+        </div>
+
+        <div className="absolute bottom-2 left-1/2 z-50 h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-foreground/30" />
+      </div>
+    </div>
+  );
+};
+
+export default TraderProfileSetup;
