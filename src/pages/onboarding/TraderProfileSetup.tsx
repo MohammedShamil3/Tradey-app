@@ -245,32 +245,40 @@ const TraderProfileSetup = () => {
         </div>
 
         <div className="flex h-full flex-col px-6 pt-14">
-          <button onClick={handleBack} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
-          </button>
+          {step < 4 && (
+            <button onClick={handleBack} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+              <ArrowLeft className="h-5 w-5 text-foreground" />
+            </button>
+          )}
 
-          <h1 className="mb-1 text-2xl font-bold text-foreground font-heading">
-            {step === 0 ? "Business Details" : step === 1 ? "Your Services" : "Document Upload"}
-          </h1>
-          <p className="mb-2 text-sm text-muted-foreground">
-            {step === 0
-              ? "Tell us about your business"
-              : step === 1
-              ? "Select the services you offer"
-              : `Upload required documents to verify your account (${uploadedMandatoryCount}/${mandatoryDocs.length})`}
-          </p>
+          {step < 4 && (
+            <>
+              <h1 className="mb-1 text-2xl font-bold text-foreground font-heading">
+                {step === 0 ? "Basic Details" : step === 1 ? "Your Services" : step === 2 ? "Document Upload" : "App Permissions"}
+              </h1>
+              <p className="mb-2 text-sm text-muted-foreground">
+                {step === 0
+                  ? "Tell us about yourself"
+                  : step === 1
+                  ? "Select the services you offer"
+                  : step === 2
+                  ? `Upload required documents (${uploadedMandatoryCount}/${mandatoryDocs.length})`
+                  : "Allow permissions for the best experience"}
+              </p>
 
-          {/* Main step progress */}
-          <div className="mb-4 flex gap-2">
-            {mainSteps.map((_, i) => (
-              <div
-                key={i}
-                className={`h-1 flex-1 rounded-full transition-all ${
-                  i <= step ? "bg-primary" : "bg-muted"
-                }`}
-              />
-            ))}
-          </div>
+              {/* Main step progress */}
+              <div className="mb-4 flex gap-2">
+                {mainSteps.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`h-1 flex-1 rounded-full transition-all ${
+                      i <= step ? "bg-primary" : "bg-muted"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Step 0: Business details */}
           {step === 0 && (
