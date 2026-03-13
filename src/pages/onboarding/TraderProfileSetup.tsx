@@ -34,6 +34,7 @@ const requiredDocuments: DocumentRequirement[] = [
     mandatory: true,
     acceptedFormats: "JPG, PNG, PDF",
     helpText: "Must be current and not expired. Used to verify your identity and right to work in the UK.",
+    hasFrontBack: true,
   },
   {
     id: "proof-address",
