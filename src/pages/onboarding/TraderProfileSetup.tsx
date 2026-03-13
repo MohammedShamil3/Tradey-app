@@ -629,6 +629,78 @@ const TraderProfileSetup = () => {
             </div>
           )}
 
+          {/* Step 3: App Permissions */}
+          {step === 3 && (
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4">
+              <p className="text-xs text-muted-foreground">
+                These permissions help us provide you with the best experience. You can change them later in settings.
+              </p>
+
+              {[
+                { key: "notifications", icon: Bell, label: "Push Notifications", desc: "Get notified about new job requests, messages, and updates" },
+                { key: "location", icon: MapPinned, label: "Location Access", desc: "Find jobs near you and show your service area to customers" },
+                { key: "camera", icon: Camera, label: "Camera Access", desc: "Take photos for documents, job evidence, and profile picture" },
+                { key: "microphone", icon: Mic, label: "Microphone Access", desc: "Record voice notes for job descriptions and communication" },
+              ].map((perm) => {
+                const isEnabled = permissions[perm.key];
+                return (
+                  <button
+                    key={perm.key}
+                    onClick={() => togglePermission(perm.key)}
+                    className={`flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
+                      isEnabled ? "border-primary bg-primary/5" : "border-border bg-card"
+                    }`}
+                  >
+                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                      isEnabled ? "bg-primary" : "bg-muted"
+                    }`}>
+                      <perm.icon className={`h-6 w-6 ${isEnabled ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-foreground">{perm.label}</h4>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{perm.desc}</p>
+                    </div>
+                    <div className={`flex h-6 w-10 shrink-0 items-center rounded-full px-0.5 transition-all ${
+                      isEnabled ? "bg-primary justify-end" : "bg-muted justify-start"
+                    }`}>
+                      <div className="h-5 w-5 rounded-full bg-white shadow-sm" />
+                    </div>
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => {
+                  setPermissions({ notifications: true, location: true, camera: true, microphone: true });
+                }}
+                className="text-center text-xs font-bold text-primary"
+              >
+                Allow all permissions
+              </button>
+            </div>
+          )}
+
+          {/* Step 4: Done / Celebration */}
+          {step === 4 && (
+            <div className="flex flex-1 flex-col items-center justify-center gap-6 pb-4 text-center">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
+                <PartyPopper className="h-12 w-12 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-extrabold text-foreground font-heading">Woohoo! 🎉</h1>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Your account is all set up. You're ready to start receiving jobs and growing your business.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 rounded-2xl bg-primary/5 px-4 py-3">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <p className="text-xs font-semibold text-foreground">
+                  Pro tip: Complete your profile photo to get 3x more bookings
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Continue button */}
           <div className="pb-12">
             {step === 2 && !allMandatoryUploaded && (
@@ -638,13 +710,15 @@ const TraderProfileSetup = () => {
             )}
             <button
               onClick={handleContinue}
-              disabled={!canContinue() || loading}
+              disabled={step < 4 && (!canContinue() || loading)}
               className="w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {loading
-                ? "Saving..."
-                : step === 2
-                ? "Complete Setup"
+                ? "Setting up your account..."
+                : step === 4
+                ? "Let's Go! 🚀"
+                : step === 3
+                ? "Set Up Account"
                 : "Continue"}
             </button>
           </div>
