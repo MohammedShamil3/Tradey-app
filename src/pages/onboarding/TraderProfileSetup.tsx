@@ -22,6 +22,7 @@ interface DocumentRequirement {
   mandatory: boolean;
   acceptedFormats: string;
   helpText: string;
+  hasFrontBack?: boolean;
 }
 
 const requiredDocuments: DocumentRequirement[] = [
@@ -33,6 +34,7 @@ const requiredDocuments: DocumentRequirement[] = [
     mandatory: true,
     acceptedFormats: "JPG, PNG, PDF",
     helpText: "Must be current and not expired. Used to verify your identity and right to work in the UK.",
+    hasFrontBack: true,
   },
   {
     id: "proof-address",
@@ -51,6 +53,7 @@ const requiredDocuments: DocumentRequirement[] = [
     mandatory: true,
     acceptedFormats: "JPG, PNG, PDF",
     helpText: "Under the Immigration, Asylum and Nationality Act 2006, we must verify your right to work in the UK before you can take on jobs.",
+    hasFrontBack: true,
   },
   {
     id: "public-liability",
@@ -159,7 +162,13 @@ const TraderProfileSetup = () => {
 
   const mandatoryDocs = requiredDocuments.filter((d) => d.mandatory);
   const optionalDocs = requiredDocuments.filter((d) => !d.mandatory);
-  const allMandatoryUploaded = mandatoryDocs.every((d) => uploadedDocs[d.id]);
+  const isDocFullyUploaded = (doc: DocumentRequirement) => {
+    if (doc.hasFrontBack) {
+      return !!uploadedDocs[`${doc.id}-front`] && !!uploadedDocs[`${doc.id}-back`];
+    }
+    return !!uploadedDocs[doc.id];
+  };
+  const allMandatoryUploaded = mandatoryDocs.every(isDocFullyUploaded);
   const currentDoc = step === 2 ? requiredDocuments[docSubStep] : null;
 
   const canContinue = () => {
@@ -260,7 +269,7 @@ const TraderProfileSetup = () => {
     }
   };
 
-  const uploadedMandatoryCount = mandatoryDocs.filter((d) => uploadedDocs[d.id]).length;
+  const uploadedMandatoryCount = mandatoryDocs.filter(isDocFullyUploaded).length;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/50 p-4">
@@ -495,7 +504,7 @@ const TraderProfileSetup = () => {
                     key={doc.id}
                     onClick={() => setDocSubStep(i)}
                     className={`h-1.5 flex-1 rounded-full transition-all ${
-                      uploadedDocs[doc.id]
+                      isDocFullyUploaded(doc)
                         ? "bg-primary"
                         : i === docSubStep
                         ? "bg-primary/40"
@@ -508,27 +517,32 @@ const TraderProfileSetup = () => {
               {/* Current document card */}
               <div className="flex flex-col gap-4">
                 <div className={`flex items-center gap-3 rounded-2xl p-4 ${
-                  uploadedDocs[currentDoc.id] ? "bg-primary/5" : "bg-accent/50"
+                  isDocFullyUploaded(currentDoc) ? "bg-primary/5" : "bg-accent/50"
                 }`}>
                   <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${
-                    uploadedDocs[currentDoc.id] ? "bg-primary" : "bg-muted"
+                    isDocFullyUploaded(currentDoc) ? "bg-primary" : "bg-muted"
                   }`}>
                     <currentDoc.icon className={`h-7 w-7 ${
-                      uploadedDocs[currentDoc.id] ? "text-primary-foreground" : "text-muted-foreground"
+                      isDocFullyUploaded(currentDoc) ? "text-primary-foreground" : "text-muted-foreground"
                     }`} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-bold text-foreground">{currentDoc.label}</h3>
-                      {currentDoc.mandatory && !uploadedDocs[currentDoc.id] && (
+                      {currentDoc.mandatory && !isDocFullyUploaded(currentDoc) && (
                         <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[9px] font-bold text-destructive">
                           Required
+                        </span>
+                      )}
+                      {currentDoc.hasFrontBack && (
+                        <span className="rounded-full bg-accent px-2 py-0.5 text-[9px] font-bold text-muted-foreground">
+                          Front + Back
                         </span>
                       )}
                     </div>
                     <p className="mt-0.5 text-xs text-muted-foreground">{currentDoc.description}</p>
                   </div>
-                  {uploadedDocs[currentDoc.id] && (
+                  {isDocFullyUploaded(currentDoc) && (
                     <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" />
                   )}
                 </div>
@@ -547,7 +561,62 @@ const TraderProfileSetup = () => {
                 </div>
 
                 {/* Upload area */}
-                {uploadedDocs[currentDoc.id] ? (
+                {currentDoc.hasFrontBack ? (
+                  /* Front & Back upload for ID-type documents */
+                  <div className="flex flex-col gap-3">
+                    {(["front", "back"] as const).map((side) => {
+                      const key = `${currentDoc.id}-${side}`;
+                      const uploaded = uploadedDocs[key];
+                      return (
+                        <div key={side}>
+                          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            {side === "front" ? "📄 Front Side" : "📄 Back Side"}
+                          </p>
+                          {uploaded ? (
+                            <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-4">
+                              <div className="flex items-center gap-3">
+                                <CheckCircle2 className="h-8 w-8 text-primary shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-bold text-foreground truncate">{uploaded.fileName}</p>
+                                  <p className="text-[10px] text-muted-foreground">{uploaded.uploadedAt}</p>
+                                </div>
+                                <div className="flex gap-2 shrink-0">
+                                  <button onClick={() => handleDocUpload(key, "camera")} className="text-[10px] font-semibold text-primary">Retake</button>
+                                  <button onClick={() => handleDocUpload(key, "file")} className="text-[10px] font-semibold text-primary">Replace</button>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex gap-2.5">
+                              <button
+                                onClick={() => handleDocUpload(key, "camera")}
+                                className="flex-1 rounded-xl border-2 border-dashed border-border bg-card p-4 transition-all active:scale-[0.98] active:border-primary"
+                              >
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                    <Camera className="h-5 w-5 text-primary" />
+                                  </div>
+                                  <p className="text-[10px] font-bold text-foreground">Take Photo</p>
+                                </div>
+                              </button>
+                              <button
+                                onClick={() => handleDocUpload(key, "file")}
+                                className="flex-1 rounded-xl border-2 border-dashed border-border bg-card p-4 transition-all active:scale-[0.98] active:border-primary"
+                              >
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
+                                    <Upload className="h-5 w-5 text-primary" />
+                                  </div>
+                                  <p className="text-[10px] font-bold text-foreground">Upload File</p>
+                                </div>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : uploadedDocs[currentDoc.id] ? (
                   <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-6">
                     <div className="flex flex-col items-center gap-2 text-center">
                       <CheckCircle2 className="h-10 w-10 text-primary" />
@@ -555,25 +624,14 @@ const TraderProfileSetup = () => {
                       <p className="text-xs text-muted-foreground">{uploadedDocs[currentDoc.id].fileName}</p>
                       <p className="text-[10px] text-muted-foreground">{uploadedDocs[currentDoc.id].uploadedAt}</p>
                       <div className="mt-2 flex gap-3">
-                        <button
-                          onClick={() => handleDocUpload(currentDoc.id, "camera")}
-                          className="text-xs font-semibold text-primary"
-                        >
-                          Retake photo
-                        </button>
+                        <button onClick={() => handleDocUpload(currentDoc.id, "camera")} className="text-xs font-semibold text-primary">Retake photo</button>
                         <span className="text-xs text-border">|</span>
-                        <button
-                          onClick={() => handleDocUpload(currentDoc.id, "file")}
-                          className="text-xs font-semibold text-primary"
-                        >
-                          Replace file
-                        </button>
+                        <button onClick={() => handleDocUpload(currentDoc.id, "file")} className="text-xs font-semibold text-primary">Replace file</button>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div className="flex gap-3">
-                    {/* Camera option */}
                     <button
                       onClick={() => handleDocUpload(currentDoc.id, "camera")}
                       className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary"
@@ -590,8 +648,6 @@ const TraderProfileSetup = () => {
                         </div>
                       </div>
                     </button>
-
-                    {/* File upload option */}
                     <button
                       onClick={() => handleDocUpload(currentDoc.id, "file")}
                       className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary"
@@ -623,12 +679,12 @@ const TraderProfileSetup = () => {
                     <button
                       onClick={() => setDocSubStep(docSubStep + 1)}
                       className={`flex-1 rounded-2xl py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
-                        uploadedDocs[currentDoc.id]
+                        isDocFullyUploaded(currentDoc)
                           ? "bg-primary text-primary-foreground"
                           : "border border-border bg-card text-muted-foreground"
                       }`}
                     >
-                      {uploadedDocs[currentDoc.id] ? "Next Document" : "Skip for now"}
+                      {isDocFullyUploaded(currentDoc) ? "Next Document" : "Skip for now"}
                     </button>
                   )}
                 </div>
@@ -636,11 +692,12 @@ const TraderProfileSetup = () => {
                 {/* Document checklist */}
                 <div>
                   <h4 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    All Documents ({Object.keys(uploadedDocs).length}/{requiredDocuments.length})
+                    All Documents ({requiredDocuments.filter(isDocFullyUploaded).length}/{requiredDocuments.length})
                   </h4>
                   <div className="rounded-2xl bg-card card-shadow overflow-hidden">
                     {requiredDocuments.map((doc, i) => {
-                      const isUploaded = !!uploadedDocs[doc.id];
+                      const isUploaded = isDocFullyUploaded(doc);
+                      const isPartial = doc.hasFrontBack && !isUploaded && (!!uploadedDocs[`${doc.id}-front`] || !!uploadedDocs[`${doc.id}-back`]);
                       const isCurrent = i === docSubStep;
                       const DocIcon = doc.icon;
                       return (
@@ -652,7 +709,7 @@ const TraderProfileSetup = () => {
                           } ${i < requiredDocuments.length - 1 ? "border-b border-border" : ""}`}
                         >
                           <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
-                            isUploaded ? "bg-primary" : "bg-muted"
+                            isUploaded ? "bg-primary" : isPartial ? "bg-primary/50" : "bg-muted"
                           }`}>
                             {isUploaded ? (
                               <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />
