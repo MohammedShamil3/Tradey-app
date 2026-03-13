@@ -546,33 +546,59 @@ const TraderProfileSetup = () => {
                       <p className="text-sm font-bold text-foreground">Uploaded</p>
                       <p className="text-xs text-muted-foreground">{uploadedDocs[currentDoc.id].fileName}</p>
                       <p className="text-[10px] text-muted-foreground">{uploadedDocs[currentDoc.id].uploadedAt}</p>
-                      <button
-                        onClick={() => handleDocUpload(currentDoc.id)}
-                        className="mt-2 text-xs font-semibold text-primary"
-                      >
-                        Replace file
-                      </button>
+                      <div className="mt-2 flex gap-3">
+                        <button
+                          onClick={() => handleDocUpload(currentDoc.id, "camera")}
+                          className="text-xs font-semibold text-primary"
+                        >
+                          Retake photo
+                        </button>
+                        <span className="text-xs text-border">|</span>
+                        <button
+                          onClick={() => handleDocUpload(currentDoc.id, "file")}
+                          className="text-xs font-semibold text-primary"
+                        >
+                          Replace file
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => handleDocUpload(currentDoc.id)}
-                    className="rounded-2xl border-2 border-dashed border-border bg-card p-8 transition-all active:scale-[0.98] active:border-primary"
-                  >
-                    <div className="flex flex-col items-center gap-3 text-center">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent">
-                        <Upload className="h-6 w-6 text-primary" />
+                  <div className="flex gap-3">
+                    {/* Camera option */}
+                    <button
+                      onClick={() => handleDocUpload(currentDoc.id, "camera")}
+                      className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary"
+                    >
+                      <div className="flex flex-col items-center gap-2.5 text-center">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                          <Camera className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-foreground">Take Photo</p>
+                          <p className="mt-0.5 text-[10px] text-muted-foreground">
+                            {currentDoc.id === "selfie-verification" ? "Open camera for selfie" : "Snap a photo"}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-bold text-foreground">
-                          Tap to scan or upload
-                        </p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          Take a photo or select a file from your device
-                        </p>
+                    </button>
+
+                    {/* File upload option */}
+                    <button
+                      onClick={() => handleDocUpload(currentDoc.id, "file")}
+                      className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary"
+                    >
+                      <div className="flex flex-col items-center gap-2.5 text-center">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent">
+                          <Upload className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-foreground">Upload File</p>
+                          <p className="mt-0.5 text-[10px] text-muted-foreground">Select from device</p>
+                        </div>
                       </div>
-                    </div>
-                  </button>
+                    </button>
+                  </div>
                 )}
 
                 {/* Navigation between docs */}
