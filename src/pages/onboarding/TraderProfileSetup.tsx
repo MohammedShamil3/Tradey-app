@@ -517,27 +517,32 @@ const TraderProfileSetup = () => {
               {/* Current document card */}
               <div className="flex flex-col gap-4">
                 <div className={`flex items-center gap-3 rounded-2xl p-4 ${
-                  uploadedDocs[currentDoc.id] ? "bg-primary/5" : "bg-accent/50"
+                  isDocFullyUploaded(currentDoc) ? "bg-primary/5" : "bg-accent/50"
                 }`}>
                   <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${
-                    uploadedDocs[currentDoc.id] ? "bg-primary" : "bg-muted"
+                    isDocFullyUploaded(currentDoc) ? "bg-primary" : "bg-muted"
                   }`}>
                     <currentDoc.icon className={`h-7 w-7 ${
-                      uploadedDocs[currentDoc.id] ? "text-primary-foreground" : "text-muted-foreground"
+                      isDocFullyUploaded(currentDoc) ? "text-primary-foreground" : "text-muted-foreground"
                     }`} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-bold text-foreground">{currentDoc.label}</h3>
-                      {currentDoc.mandatory && !uploadedDocs[currentDoc.id] && (
+                      {currentDoc.mandatory && !isDocFullyUploaded(currentDoc) && (
                         <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[9px] font-bold text-destructive">
                           Required
+                        </span>
+                      )}
+                      {currentDoc.hasFrontBack && (
+                        <span className="rounded-full bg-accent px-2 py-0.5 text-[9px] font-bold text-muted-foreground">
+                          Front + Back
                         </span>
                       )}
                     </div>
                     <p className="mt-0.5 text-xs text-muted-foreground">{currentDoc.description}</p>
                   </div>
-                  {uploadedDocs[currentDoc.id] && (
+                  {isDocFullyUploaded(currentDoc) && (
                     <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" />
                   )}
                 </div>
