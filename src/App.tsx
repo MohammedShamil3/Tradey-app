@@ -79,16 +79,16 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!session) return <Navigate to="/welcome" replace />;
 
   if (profile?.onboarding_status === "role_selection") {
-    // Auto-assign customer role — skip role selection
+    // Auto-assign trader role — platform is for service providers
     if (user) {
-      updateProfile({ role: "customer", onboarding_status: "profile_setup" }).then(() => {
-        supabase.from("user_roles").upsert({ user_id: user.id, role: "customer" as const });
+      updateProfile({ role: "trader", onboarding_status: "profile_setup" }).then(() => {
+        supabase.from("user_roles").upsert({ user_id: user.id, role: "trader" as const });
       });
     }
-    return <Navigate to="/onboarding/profile" replace />;
+    return <Navigate to="/onboarding/trader-profile" replace />;
   }
   if (profile?.onboarding_status === "profile_setup") {
-    return <Navigate to="/onboarding/profile" replace />;
+    return <Navigate to="/onboarding/trader-profile" replace />;
   }
 
   return <>{children}</>;
