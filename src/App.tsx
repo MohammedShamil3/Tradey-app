@@ -125,7 +125,7 @@ const App = () => (
 
             {/* Onboarding */}
             <Route path="/onboarding/role" element={<Navigate to="/onboarding/trader-profile" replace />} />
-            <Route path="/onboarding/profile" element={<OnboardingRoute><ProfileSetup /></OnboardingRoute>} />
+            <Route path="/onboarding/profile" element={<Navigate to="/onboarding/trader-profile" replace />} />
             <Route path="/onboarding/trader-profile" element={<OnboardingRoute><TraderProfileSetup /></OnboardingRoute>} />
 
             {/* Protected app routes — role-based home */}
