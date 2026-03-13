@@ -193,28 +193,33 @@ const TraderProfileSetup = () => {
   };
 
   const handleContinue = async () => {
-    if (step < 2) {
+    if (step < 3) {
       setStep(step + 1);
       return;
     }
 
-    // Final step — save profile
-    setLoading(true);
-    const { error } = await updateProfile({
-      full_name: fullName.trim(),
-      street: street.trim(),
-      city: city.trim(),
-      postcode: postcode.trim(),
-      onboarding_status: "completed",
-    });
-    setLoading(false);
-    if (error) {
-      toast.error("Something went wrong");
-    } else {
-      await refreshProfile();
-      toast.success("Welcome aboard! 🎉");
-      navigate("/", { replace: true });
+    if (step === 3) {
+      // Save profile then go to done screen
+      setLoading(true);
+      const { error } = await updateProfile({
+        full_name: fullName.trim(),
+        street: street.trim(),
+        city: city.trim(),
+        postcode: postcode.trim(),
+        onboarding_status: "completed",
+      });
+      setLoading(false);
+      if (error) {
+        toast.error("Something went wrong");
+      } else {
+        await refreshProfile();
+        setStep(4);
+      }
+      return;
     }
+
+    // Step 4 — done, go to home
+    navigate("/", { replace: true });
   };
 
   const handleBack = () => {
@@ -223,9 +228,9 @@ const TraderProfileSetup = () => {
       setExpandedServiceType(null);
     } else if (step === 2 && docSubStep > 0) {
       setDocSubStep(docSubStep - 1);
-    } else if (step > 0) {
+    } else if (step > 0 && step < 4) {
       setStep(step - 1);
-    } else {
+    } else if (step === 0) {
       navigate("/onboarding/role");
     }
   };
