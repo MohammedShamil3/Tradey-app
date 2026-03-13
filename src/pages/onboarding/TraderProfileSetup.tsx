@@ -269,7 +269,7 @@ const TraderProfileSetup = () => {
     }
   };
 
-  const uploadedMandatoryCount = mandatoryDocs.filter((d) => uploadedDocs[d.id]).length;
+  const uploadedMandatoryCount = mandatoryDocs.filter(isDocFullyUploaded).length;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/50 p-4">
