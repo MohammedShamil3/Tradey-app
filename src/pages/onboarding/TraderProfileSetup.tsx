@@ -674,12 +674,12 @@ const TraderProfileSetup = () => {
                     <button
                       onClick={() => setDocSubStep(docSubStep + 1)}
                       className={`flex-1 rounded-2xl py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
-                        uploadedDocs[currentDoc.id]
+                        isDocFullyUploaded(currentDoc)
                           ? "bg-primary text-primary-foreground"
                           : "border border-border bg-card text-muted-foreground"
                       }`}
                     >
-                      {uploadedDocs[currentDoc.id] ? "Next Document" : "Skip for now"}
+                      {isDocFullyUploaded(currentDoc) ? "Next Document" : "Skip for now"}
                     </button>
                   )}
                 </div>
