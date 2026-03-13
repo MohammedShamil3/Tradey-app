@@ -5,13 +5,14 @@ import {
   ArrowLeft, User, MapPin, Building2, Camera, FileText, Shield,
   CheckCircle2, ChevronRight, Upload, AlertTriangle, Fingerprint,
   CreditCard, HardHat, Scale, ClipboardCheck, ChevronDown,
+  Bell, MapPinned, Mic, PartyPopper, Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { serviceCategories, catAServices, catBServices, getAllServices } from "@/data/services";
 import { categoryServiceTypes } from "@/data/serviceTypes";
 import { EmojiIcon, getEmojiIconColors, categoryIconMap, categoryColorMap, iconMap } from "@/lib/icons";
 
-const mainSteps = ["Business", "Services", "Documents"];
+const mainSteps = ["Details", "Services", "Documents", "Permissions", "Done"];
 
 interface DocumentRequirement {
   id: string;
@@ -140,6 +141,18 @@ const TraderProfileSetup = () => {
     return serviceType.options.filter((o) => selectedServices.includes(o.id)).length;
   };
 
+  // Step 3 - Permissions
+  const [permissions, setPermissions] = useState<Record<string, boolean>>({
+    notifications: false,
+    location: false,
+    camera: false,
+    microphone: false,
+  });
+
+  const togglePermission = (key: string) => {
+    setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   // Step 2 - Documents
   const [docSubStep, setDocSubStep] = useState(0);
   const [uploadedDocs, setUploadedDocs] = useState<Record<string, { fileName: string; uploadedAt: string }>>({});
@@ -153,6 +166,7 @@ const TraderProfileSetup = () => {
     if (step === 0) return fullName.trim() && city.trim() && postcode.trim();
     if (step === 1) return selectedServices.length > 0;
     if (step === 2) return allMandatoryUploaded;
+    if (step === 3) return true; // permissions are optional
     return false;
   };
 
@@ -179,28 +193,33 @@ const TraderProfileSetup = () => {
   };
 
   const handleContinue = async () => {
-    if (step < 2) {
+    if (step < 3) {
       setStep(step + 1);
       return;
     }
 
-    // Final step — save profile
-    setLoading(true);
-    const { error } = await updateProfile({
-      full_name: fullName.trim(),
-      street: street.trim(),
-      city: city.trim(),
-      postcode: postcode.trim(),
-      onboarding_status: "completed",
-    });
-    setLoading(false);
-    if (error) {
-      toast.error("Something went wrong");
-    } else {
-      await refreshProfile();
-      toast.success("Welcome aboard! 🎉");
-      navigate("/", { replace: true });
+    if (step === 3) {
+      // Save profile then go to done screen
+      setLoading(true);
+      const { error } = await updateProfile({
+        full_name: fullName.trim(),
+        street: street.trim(),
+        city: city.trim(),
+        postcode: postcode.trim(),
+        onboarding_status: "completed",
+      });
+      setLoading(false);
+      if (error) {
+        toast.error("Something went wrong");
+      } else {
+        await refreshProfile();
+        setStep(4);
+      }
+      return;
     }
+
+    // Step 4 — done, go to home
+    navigate("/", { replace: true });
   };
 
   const handleBack = () => {
@@ -209,9 +228,9 @@ const TraderProfileSetup = () => {
       setExpandedServiceType(null);
     } else if (step === 2 && docSubStep > 0) {
       setDocSubStep(docSubStep - 1);
-    } else if (step > 0) {
+    } else if (step > 0 && step < 4) {
       setStep(step - 1);
-    } else {
+    } else if (step === 0) {
       navigate("/onboarding/role");
     }
   };
@@ -226,32 +245,40 @@ const TraderProfileSetup = () => {
         </div>
 
         <div className="flex h-full flex-col px-6 pt-14">
-          <button onClick={handleBack} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
-          </button>
+          {step < 4 && (
+            <button onClick={handleBack} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+              <ArrowLeft className="h-5 w-5 text-foreground" />
+            </button>
+          )}
 
-          <h1 className="mb-1 text-2xl font-bold text-foreground font-heading">
-            {step === 0 ? "Business Details" : step === 1 ? "Your Services" : "Document Upload"}
-          </h1>
-          <p className="mb-2 text-sm text-muted-foreground">
-            {step === 0
-              ? "Tell us about your business"
-              : step === 1
-              ? "Select the services you offer"
-              : `Upload required documents to verify your account (${uploadedMandatoryCount}/${mandatoryDocs.length})`}
-          </p>
+          {step < 4 && (
+            <>
+              <h1 className="mb-1 text-2xl font-bold text-foreground font-heading">
+                {step === 0 ? "Basic Details" : step === 1 ? "Your Services" : step === 2 ? "Document Upload" : "App Permissions"}
+              </h1>
+              <p className="mb-2 text-sm text-muted-foreground">
+                {step === 0
+                  ? "Tell us about yourself"
+                  : step === 1
+                  ? "Select the services you offer"
+                  : step === 2
+                  ? `Upload required documents (${uploadedMandatoryCount}/${mandatoryDocs.length})`
+                  : "Allow permissions for the best experience"}
+              </p>
 
-          {/* Main step progress */}
-          <div className="mb-4 flex gap-2">
-            {mainSteps.map((_, i) => (
-              <div
-                key={i}
-                className={`h-1 flex-1 rounded-full transition-all ${
-                  i <= step ? "bg-primary" : "bg-muted"
-                }`}
-              />
-            ))}
-          </div>
+              {/* Main step progress */}
+              <div className="mb-4 flex gap-2">
+                {mainSteps.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`h-1 flex-1 rounded-full transition-all ${
+                      i <= step ? "bg-primary" : "bg-muted"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Step 0: Business details */}
           {step === 0 && (
@@ -602,6 +629,78 @@ const TraderProfileSetup = () => {
             </div>
           )}
 
+          {/* Step 3: App Permissions */}
+          {step === 3 && (
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4">
+              <p className="text-xs text-muted-foreground">
+                These permissions help us provide you with the best experience. You can change them later in settings.
+              </p>
+
+              {[
+                { key: "notifications", icon: Bell, label: "Push Notifications", desc: "Get notified about new job requests, messages, and updates" },
+                { key: "location", icon: MapPinned, label: "Location Access", desc: "Find jobs near you and show your service area to customers" },
+                { key: "camera", icon: Camera, label: "Camera Access", desc: "Take photos for documents, job evidence, and profile picture" },
+                { key: "microphone", icon: Mic, label: "Microphone Access", desc: "Record voice notes for job descriptions and communication" },
+              ].map((perm) => {
+                const isEnabled = permissions[perm.key];
+                return (
+                  <button
+                    key={perm.key}
+                    onClick={() => togglePermission(perm.key)}
+                    className={`flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
+                      isEnabled ? "border-primary bg-primary/5" : "border-border bg-card"
+                    }`}
+                  >
+                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                      isEnabled ? "bg-primary" : "bg-muted"
+                    }`}>
+                      <perm.icon className={`h-6 w-6 ${isEnabled ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-foreground">{perm.label}</h4>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{perm.desc}</p>
+                    </div>
+                    <div className={`flex h-6 w-10 shrink-0 items-center rounded-full px-0.5 transition-all ${
+                      isEnabled ? "bg-primary justify-end" : "bg-muted justify-start"
+                    }`}>
+                      <div className="h-5 w-5 rounded-full bg-white shadow-sm" />
+                    </div>
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => {
+                  setPermissions({ notifications: true, location: true, camera: true, microphone: true });
+                }}
+                className="text-center text-xs font-bold text-primary"
+              >
+                Allow all permissions
+              </button>
+            </div>
+          )}
+
+          {/* Step 4: Done / Celebration */}
+          {step === 4 && (
+            <div className="flex flex-1 flex-col items-center justify-center gap-6 pb-4 text-center">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
+                <PartyPopper className="h-12 w-12 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-extrabold text-foreground font-heading">Woohoo! 🎉</h1>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Your account is all set up. You're ready to start receiving jobs and growing your business.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 rounded-2xl bg-primary/5 px-4 py-3">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <p className="text-xs font-semibold text-foreground">
+                  Pro tip: Complete your profile photo to get 3x more bookings
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Continue button */}
           <div className="pb-12">
             {step === 2 && !allMandatoryUploaded && (
@@ -611,13 +710,15 @@ const TraderProfileSetup = () => {
             )}
             <button
               onClick={handleContinue}
-              disabled={!canContinue() || loading}
+              disabled={step < 4 && (!canContinue() || loading)}
               className="w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {loading
-                ? "Saving..."
-                : step === 2
-                ? "Complete Setup"
+                ? "Setting up your account..."
+                : step === 4
+                ? "Let's Go! 🚀"
+                : step === 3
+                ? "Set Up Account"
                 : "Continue"}
             </button>
           </div>
