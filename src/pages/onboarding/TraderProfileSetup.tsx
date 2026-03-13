@@ -12,7 +12,7 @@ import { serviceCategories, catAServices, catBServices, getAllServices } from "@
 import { categoryServiceTypes } from "@/data/serviceTypes";
 import { EmojiIcon, getEmojiIconColors, categoryIconMap, categoryColorMap, iconMap } from "@/lib/icons";
 
-const mainSteps = ["Business", "Services", "Documents"];
+const mainSteps = ["Details", "Services", "Documents", "Permissions", "Done"];
 
 interface DocumentRequirement {
   id: string;
