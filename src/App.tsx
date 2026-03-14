@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Categories from "./pages/Categories";
 import CategoryDetail from "./pages/CategoryDetail";
@@ -101,13 +100,6 @@ const OnboardingRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-/** Renders trader or customer home based on role */
-const RoleBasedHome = () => {
-  const { profile } = useAuth();
-  if (profile?.role === "trader") return <TraderHome />;
-  return <Index />;
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -129,7 +121,7 @@ const App = () => (
             <Route path="/onboarding/trader-profile" element={<OnboardingRoute><TraderProfileSetup /></OnboardingRoute>} />
 
             {/* Protected app routes — role-based home */}
-            <Route path="/" element={<ProtectedRoute><RoleBasedHome /></ProtectedRoute>} />
+            <Route path="/" element={<ProtectedRoute><TraderHome /></ProtectedRoute>} />
 
             {/* Customer routes */}
             <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
