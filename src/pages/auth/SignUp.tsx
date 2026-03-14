@@ -154,18 +154,16 @@ const SignUp = () => {
                   </span>
                 </label>
 
-                <div className="mt-auto pb-12">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98] disabled:opacity-50"
-                  >
-                    {loading ? "Sending code..." : "Send Verification Code"}
-                  </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="mt-2 w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98] disabled:opacity-50"
+                >
+                  {loading ? "Sending code..." : "Send Verification Code"}
+                </button>
 
-                  <div className="mt-4">
-                    <SocialSignInButtons />
-                  </div>
+                <div className="mt-auto pb-12">
+                  <SocialSignInButtons />
 
                   <p className="mt-4 text-center text-sm text-muted-foreground">
                     Already have an account?{" "}
