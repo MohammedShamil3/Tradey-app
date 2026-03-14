@@ -9,8 +9,8 @@ export interface MobileLayoutProps {
 
 const MobileLayout = ({ children, role }: MobileLayoutProps) => {
   const { profile } = useAuth();
-  const effectiveRole = role ?? (profile?.role === "trader" ? "trader" : "customer");
-  const traderType = profile?.trader_type ?? null;
+  const effectiveRole = "trader";
+  const traderType = profile?.trader_type ?? "individual";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/50 p-4">

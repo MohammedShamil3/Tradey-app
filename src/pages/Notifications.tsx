@@ -6,45 +6,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import WorkerQuoteRequest, { type JobDetails } from "@/components/trader/WorkerQuoteRequest";
 
-/* ── Customer notifications ── */
-const customerNotifications = [
-  {
-    id: 1,
-    type: "booking",
-    title: "Booking Confirmed",
-    message: "Your Tap Repair booking with John Smith on 12 Mar has been confirmed.",
-    time: "2 hours ago",
-    read: false,
-    icon: Calendar,
-  },
-  {
-    id: 2,
-    type: "quote",
-    title: "New Quote Received",
-    message: "Mike's Plumbing sent you a quote of £4,500 for Bathroom Renovation.",
-    time: "5 hours ago",
-    read: false,
-    icon: CheckCircle2,
-  },
-  {
-    id: 3,
-    type: "message",
-    title: "New Message",
-    message: "Sophie Baker sent you a message about your Light Installation.",
-    time: "1 day ago",
-    read: false,
-    icon: MessageCircle,
-  },
-  {
-    id: 4,
-    type: "system",
-    title: "Profile Verified",
-    message: "Your profile has been verified successfully. You can now book services.",
-    time: "2 days ago",
-    read: true,
-    icon: AlertCircle,
-  },
-];
+/* ── Trader Flow Only ── */
+
 
 /* ── Quote request data for workers ── */
 interface QuoteRequestData {
@@ -181,9 +144,8 @@ const traderNotifications: {
 const Notifications = () => {
   const navigate = useNavigate();
   const { profile } = useAuth();
-  const isTrader = profile?.role === "trader";
+  const allNotifs = traderNotifications;
 
-  const allNotifs = isTrader ? traderNotifications : customerNotifications;
   const [notifications, setNotifications] = useState(allNotifs);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -199,7 +161,8 @@ const Notifications = () => {
   const [expandedQuoteId, setExpandedQuoteId] = useState<number | null>(null);
 
   return (
-    <MobileLayout role={isTrader ? "trader" : "customer"}>
+    <MobileLayout role="trader">
+
       <div className="px-4 pt-6">
         <div className="mb-8 flex items-center gap-3">
           <button

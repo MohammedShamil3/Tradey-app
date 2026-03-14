@@ -21,36 +21,8 @@ interface MenuItem {
   onClick?: () => void;
 }
 
-const customerMenuGroups: MenuGroup[] = [
-  {
-    title: "Account",
-    items: [
-      { icon: Lock, label: "Password & Security", subtitle: "Change password, 2FA", route: "/profile/security" },
-    ],
-  },
-  {
-    title: "Payments",
-    items: [
-      { icon: CreditCard, label: "Payment Methods", subtitle: "Manage your cards and bank accounts", route: "/profile/payments" },
-    ],
-  },
-  {
-    title: "Preferences",
-    items: [
-      { icon: Bell, label: "Notifications", subtitle: "Push, email, and SMS preferences", route: "/profile/notifications" },
-      { icon: Globe, label: "Language & Region", subtitle: "English · Netherlands", route: "/profile/language" },
-      { icon: Heart, label: "Saved Traders", subtitle: "Your favourites list", route: "/profile/favourites" },
-    ],
-  },
-  {
-    title: "Support",
-    items: [
-      { icon: HelpCircle, label: "Help Centre", subtitle: "FAQs and contact support", route: "/profile/help" },
-      { icon: MessageSquare, label: "Give Feedback", subtitle: "Help us improve truFindo", route: "/profile/feedback" },
-      { icon: FileText, label: "Legal", subtitle: "Terms, privacy policy, licences", route: "/profile/legal" },
-    ],
-  },
-];
+/* Customer menu removed - strictly trader flow only */
+
 
 const individualTraderMenuGroups: MenuGroup[] = [
   {
@@ -150,11 +122,9 @@ interface ProfileMenuSectionProps {
 
 const ProfileMenuSection = ({ profile }: ProfileMenuSectionProps) => {
   const navigate = useNavigate();
-  const isTrader = profile?.role === "trader";
   const isAgency = profile?.trader_type === "agency";
-  const menuGroups = isTrader
-    ? (isAgency ? agencyTraderMenuGroups : individualTraderMenuGroups)
-    : customerMenuGroups;
+  const menuGroups = isAgency ? agencyTraderMenuGroups : individualTraderMenuGroups;
+
 
   return (
     <div className="flex flex-col gap-4">

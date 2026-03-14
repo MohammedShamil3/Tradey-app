@@ -123,19 +123,20 @@ const App = () => (
             {/* Protected app routes — role-based home */}
             <Route path="/" element={<ProtectedRoute><TraderHome /></ProtectedRoute>} />
 
-            {/* Customer routes */}
-            <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
-            <Route path="/services" element={<ProtectedRoute><Services /></ProtectedRoute>} />
-            <Route path="/services/:serviceId" element={<ProtectedRoute><ServiceDetail /></ProtectedRoute>} />
-            <Route path="/services/:serviceId/book" element={<ProtectedRoute><BookService /></ProtectedRoute>} />
-            <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
-            <Route path="/categories/:categoryId" element={<ProtectedRoute><CategoryDetail /></ProtectedRoute>} />
-            <Route path="/bundles/:bundleId" element={<ProtectedRoute><BundleDetail /></ProtectedRoute>} />
-            <Route path="/traders/:traderId" element={<ProtectedRoute><TraderProfile /></ProtectedRoute>} />
-            <Route path="/traders/:traderId/services" element={<ProtectedRoute><TraderServicesPage /></ProtectedRoute>} />
-            <Route path="/jobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
-            <Route path="/jobs/post" element={<ProtectedRoute><PostJob /></ProtectedRoute>} />
-            <Route path="/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
+            {/* Customer routes - Redirected to Trader counterparts */}
+            <Route path="/search" element={<Navigate to="/" replace />} />
+            <Route path="/services" element={<Navigate to="/trader/services" replace />} />
+            <Route path="/services/:serviceId" element={<Navigate to="/trader/services" replace />} />
+            <Route path="/services/:serviceId/book" element={<Navigate to="/trader/services" replace />} />
+            <Route path="/categories" element={<Navigate to="/" replace />} />
+            <Route path="/categories/:categoryId" element={<Navigate to="/" replace />} />
+            <Route path="/bundles/:bundleId" element={<Navigate to="/" replace />} />
+            <Route path="/traders/:traderId" element={<Navigate to="/" replace />} />
+            <Route path="/traders/:traderId/services" element={<Navigate to="/" replace />} />
+            <Route path="/jobs" element={<Navigate to="/trader/jobs" replace />} />
+            <Route path="/jobs/post" element={<Navigate to="/" replace />} />
+            <Route path="/bookings" element={<Navigate to="/trader/jobs" replace />} />
+
 
             {/* Trader routes */}
             <Route path="/trader/jobs" element={<ProtectedRoute><TraderJobs /></ProtectedRoute>} />

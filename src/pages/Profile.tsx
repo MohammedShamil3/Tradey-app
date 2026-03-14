@@ -18,14 +18,17 @@ const Profile = () => {
   const isAgency = profile?.trader_type === "agency";
 
   return (
-    <MobileLayout role={isTrader ? "trader" : "customer"}>
+    <MobileLayout role="trader">
       <div className="px-4 pt-6 pb-8">
         <h1 className="mb-1 text-2xl font-extrabold text-foreground font-heading">
-          {isAgency ? "Company Settings" : "Profile"}
+          {isAgency ? "Company Settings" : "Account Settings"}
         </h1>
-        {isAgency && (
+        {isAgency ? (
           <p className="mb-6 text-xs text-muted-foreground">Manage your agency, compliance, and finances</p>
+        ) : (
+          <p className="mb-6 text-xs text-muted-foreground">Manage your profile, services, and preferences</p>
         )}
+
         {!isAgency && <div className="mb-8" />}
 
         <ProfileHeader profile={profile} onEditPress={() => navigate("/profile/details")} />

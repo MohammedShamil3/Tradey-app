@@ -1,12 +1,8 @@
 import { Home, Wrench, Calendar, MessageCircle, User, Briefcase, Users, PoundSterling } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 
-const customerNav = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Calendar, label: "Bookings", path: "/bookings" },
-  { icon: MessageCircle, label: "Chat", path: "/chat" },
-  { icon: User, label: "Profile", path: "/profile" },
-];
+// Customer navigation removed
+
 
 const individualTraderNav = [
   { icon: Home, label: "Home", path: "/" },
@@ -26,9 +22,8 @@ const agencyTraderNav = [
 
 const BottomNav = ({ role, traderType }: { role?: "customer" | "trader"; traderType?: "individual" | "agency" | null }) => {
   const { pathname } = useLocation();
-  const navItems = role === "trader"
-    ? (traderType === "agency" ? agencyTraderNav : individualTraderNav)
-    : customerNav;
+  const navItems = traderType === "agency" ? agencyTraderNav : individualTraderNav;
+
 
   return (
     <nav className="absolute bottom-0 left-0 right-0 z-40 border-t border-border/50 bg-card/80 backdrop-blur-xl px-2 pb-7 pt-2">
