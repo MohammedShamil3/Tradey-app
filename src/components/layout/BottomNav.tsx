@@ -1,9 +1,8 @@
-import { Home, Wrench, Calendar, MessageCircle, User, Briefcase, Users } from "lucide-react";
+import { Home, Wrench, Calendar, MessageCircle, User, Briefcase, Users, PoundSterling } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 
 const customerNav = [
   { icon: Home, label: "Home", path: "/" },
-  { icon: Wrench, label: "Services", path: "/services" },
   { icon: Calendar, label: "Bookings", path: "/bookings" },
   { icon: MessageCircle, label: "Chat", path: "/chat" },
   { icon: User, label: "Profile", path: "/profile" },
@@ -12,17 +11,17 @@ const customerNav = [
 const individualTraderNav = [
   { icon: Home, label: "Home", path: "/" },
   { icon: Briefcase, label: "Jobs", path: "/trader/jobs" },
-  { icon: Wrench, label: "Services", path: "/trader/services" },
+  { icon: PoundSterling, label: "Earnings", path: "/trader/earnings" },
   { icon: MessageCircle, label: "Messages", path: "/chat" },
-  { icon: User, label: "Profile", path: "/profile" },
+  { icon: User, label: "Settings", path: "/profile" },
 ];
 
 const agencyTraderNav = [
   { icon: Home, label: "Home", path: "/" },
   { icon: Briefcase, label: "Jobs", path: "/trader/jobs" },
-  { icon: Wrench, label: "Services", path: "/trader/services" },
+  { icon: PoundSterling, label: "Earnings", path: "/trader/earnings" },
   { icon: Users, label: "Groups", path: "/trader/groups" },
-  { icon: User, label: "Profile", path: "/profile" },
+  { icon: User, label: "Settings", path: "/profile" },
 ];
 
 const BottomNav = ({ role, traderType }: { role?: "customer" | "trader"; traderType?: "individual" | "agency" | null }) => {

@@ -470,60 +470,7 @@ const TraderHome = () => {
           )}
         </div>
 
-        {/* Earnings + Chart CTA */}
-        <div className="rounded-2xl bg-card card-shadow overflow-hidden border border-border">
-          <div className="p-4 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent shrink-0">
-              <PoundSterling className="h-5 w-5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-bold text-foreground">Earnings</h4>
-              <p className="text-[11px] text-muted-foreground">This month so far</p>
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-extrabold text-foreground">£4,845</p>
-              <div className="flex items-center gap-0.5 justify-end">
-                <TrendingUp className="h-3 w-3 text-[hsl(142,70%,45%)]" />
-                <span className="text-[10px] font-semibold text-[hsl(142,70%,45%)]">+17%</span>
-              </div>
-            </div>
-          </div>
-          <div className="px-4 pb-3">
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className="h-2 w-2 rounded-full bg-[hsl(142,70%,45%)]" />
-              <span className="text-[10px] text-muted-foreground">Earnings</span>
-            </div>
-            <div className="h-28">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={[
-                  { label: "Mon", income: 120 },
-                  { label: "Tue", income: 65 },
-                  { label: "Wed", income: 190 },
-                  { label: "Thu", income: 85 },
-                  { label: "Fri", income: 245 },
-                  { label: "Sat", income: 140 },
-                  { label: "Sun", income: 0 },
-                ]} margin={{ top: 5, right: 5, left: 5, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="homeIncGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(142,70%,45%)" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="hsl(142,70%,45%)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                  <Area type="monotone" dataKey="income" stroke="hsl(142,70%,45%)" fill="url(#homeIncGrad)" strokeWidth={2} dot={false} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate("/trader/earnings")}
-            className="w-full border-t border-border py-3 text-xs font-bold text-primary transition-colors active:bg-muted"
-          >
-            View more
-          </button>
-        </div>
+        {/* Earnings + Chart CTA removed, now in bottom nav */}
 
         {/* Quote Modal — agency only */}
         {isAgencyProfile && quoteJobId && (() => {

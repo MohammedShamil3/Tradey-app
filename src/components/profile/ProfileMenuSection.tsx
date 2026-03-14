@@ -1,5 +1,5 @@
 import {
-  CreditCard, Bell,
+  CreditCard, Bell, Wrench,
   HelpCircle, FileText, Lock, ChevronRight, Heart,
   Globe, MessageSquare, Landmark, ShieldCheck, PoundSterling,
   Building2, Receipt, Users, Banknote, AlertTriangle, Calendar
@@ -63,6 +63,7 @@ const individualTraderMenuGroups: MenuGroup[] = [
     title: "Personal",
     items: [
       { icon: Building2, label: "Personal Details", subtitle: "Name, phone, date of birth", route: "/profile/details" },
+      { icon: Wrench, label: "My Services", subtitle: "Services you offer and prices", route: "/trader/services" },
       { icon: ShieldCheck, label: "Verification & Documents", subtitle: "ID, right to work, certificates", route: "/profile/verification", badge: "1 Pending", badgeColor: "bg-[hsl(25,90%,55%)]/10 text-[hsl(25,90%,55%)]" },
     ],
   },
@@ -102,6 +103,7 @@ const agencyTraderMenuGroups: MenuGroup[] = [
     title: "Company",
     items: [
       { icon: Building2, label: "Company Details", subtitle: "Business name, address, registration", route: "/profile/details" },
+      { icon: Wrench, label: "Company Services", subtitle: "Services your agency offers and prices", route: "/trader/services" },
       { icon: ShieldCheck, label: "Company Documents", subtitle: "Licences, insurance, certificates", route: "/profile/verification", badge: "1 Expiring", badgeColor: "bg-destructive/10 text-destructive" },
     ],
   },
