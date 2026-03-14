@@ -81,7 +81,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (profile?.onboarding_status === "role_selection") {
     // Auto-assign trader role — platform is for service providers
     if (user) {
-      updateProfile({ role: "trader", onboarding_status: "profile_setup" }).then(() => {
+      updateProfile({ role: "trader", trader_type: "individual", onboarding_status: "profile_setup" }).then(() => {
         supabase.from("user_roles").upsert({ user_id: user.id, role: "trader" as const });
       });
     }
