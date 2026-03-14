@@ -35,9 +35,18 @@ export const categoryServiceTypes: CategoryServiceTypes[] = [
         id: "plumbing-pipe",
         label: "Pipe",
         options: [
-          { id: "pipe-repair", label: "Leak Repair" },
-          { id: "pipe-inspection", label: "Inspection" },
-          { id: "pipe-burst", label: "Burst Pipe Emergency" },
+          { id: "pipe-repair", label: "Repair" },
+          { id: "pipe-maintenance", label: "Maintenance" },
+          { id: "pipe-installation", label: "Installation" },
+        ],
+      },
+      {
+        id: "plumbing-leak",
+        label: "Leak Detection",
+        options: [
+          { id: "leak-detection", label: "Diagnostic & Detection" },
+          { id: "leak-repair", label: "Emergency Leak Repair" },
+          { id: "leak-prevention", label: "Prevention & Testing" },
         ],
       },
       {

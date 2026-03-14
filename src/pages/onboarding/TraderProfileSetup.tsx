@@ -520,18 +520,6 @@ const TraderProfileSetup = () => {
                             </div>
                             <p className="text-[10px] text-muted-foreground">{st.options.length} options</p>
                           </button>
-                          
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleAllInServiceType(st);
-                            }}
-                            className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${
-                              allSelected ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-muted"
-                            }`}
-                          >
-                            {allSelected ? "Deselect All" : "Select All"}
-                          </button>
 
                           <ChevronDown 
                             onClick={() => setExpandedServiceType(isExpanded && !searchQuery ? null : st.id)}
@@ -541,6 +529,23 @@ const TraderProfileSetup = () => {
 
                         {isExpanded && (
                           <div className="bg-muted/30 border-t border-border">
+                            {/* Select All Row */}
+                            {!searchQuery && (
+                              <button
+                                onClick={() => toggleAllInServiceType(st)}
+                                className="flex w-full items-center gap-3 px-4 py-3 text-left border-b border-border bg-primary/5 active:bg-primary/10 transition-colors"
+                              >
+                                <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
+                                  allSelected ? "border-primary bg-primary" : "border-border"
+                                }`}>
+                                  {allSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />}
+                                </div>
+                                <p className="text-xs font-bold text-primary">
+                                  {allSelected ? "Deselect all services" : `Select all ${st.label.toLowerCase()} services`}
+                                </p>
+                              </button>
+                            )}
+
                             {filteredOptions.map((option) => {
                               const isSelected = selectedServices.includes(option.id);
                               return (
