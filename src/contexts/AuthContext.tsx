@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         street: null,
         city: null,
         postcode: null,
-        onboarding_status: "completed",
+        onboarding_status: "profile_setup",
         kyc_status: "verified",
         avatar_url: null,
         trader_type: "individual",
