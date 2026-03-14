@@ -42,7 +42,7 @@ const Splash = () => {
           <button
             onClick={() => navigate("/auth/signup")}
             className="w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98]">
-            Get Started
+            Getting Started with me
           </button>
         </div>
 
