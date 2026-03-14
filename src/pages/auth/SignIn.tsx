@@ -114,7 +114,7 @@ const SignIn = () => {
                   />
                 </div>
 
-                <div className="mt-auto pb-12">
+                <div className="mt-4 flex flex-col gap-4">
                   <button
                     type="submit"
                     disabled={loading}
@@ -123,11 +123,9 @@ const SignIn = () => {
                     {loading ? "Sending code..." : "Send Verification Code"}
                   </button>
 
-                  <div className="mt-4">
-                    <SocialSignInButtons />
-                  </div>
+                  <SocialSignInButtons />
 
-                  <p className="mt-4 text-center text-sm text-muted-foreground">
+                  <p className="text-center text-sm text-muted-foreground">
                     Don't have an account?{" "}
                     <button type="button" onClick={() => navigate("/auth/signup")} className="font-bold text-primary">
                       Create an account
@@ -149,7 +147,7 @@ const SignIn = () => {
                 <span className="text-xs text-muted-foreground">For demo, enter any 6 digits</span>
               </div>
 
-              <div className="flex justify-center gap-3 mb-8">
+              <div className="flex justify-center gap-3 mb-6">
                 {otp.map((digit, i) => (
                   <input
                     key={i}
@@ -167,14 +165,14 @@ const SignIn = () => {
                 ))}
               </div>
 
-              <button
-                onClick={() => toast.success("Code resent!")}
-                className="mb-6 self-center text-sm font-semibold text-primary"
-              >
-                Resend code
-              </button>
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={() => toast.success("Code resent!")}
+                  className="self-center text-sm font-semibold text-primary"
+                >
+                  Resend code
+                </button>
 
-              <div className="mt-auto pb-12">
                 <button
                   onClick={handleVerify}
                   disabled={loading}
