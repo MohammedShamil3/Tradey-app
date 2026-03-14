@@ -397,60 +397,59 @@ const Chat = () => {
             </div>
           </div>
 
-            <button
-              onClick={() => navigate("/trader/jobs")}
-              className="w-full border-b border-border bg-accent/40 px-4 py-3 text-left active:bg-accent/60 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-card border border-border`}>
-                  <EmojiIcon emoji={currentChat.serviceIcon} size={20} weight="regular" colorize />
+          <button
+            onClick={() => navigate("/trader/jobs")}
+            className="w-full border-b border-border bg-accent/40 px-4 py-3 text-left active:bg-accent/60 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-card border border-border`}>
+                <EmojiIcon emoji={currentChat.serviceIcon} size={20} weight="regular" colorize />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[13px] font-bold text-foreground truncate">{currentChat.service}</p>
+                  <div className="flex items-center gap-2">
+                    {currentChat.jobPrice ? (
+                      <span className="text-sm font-extrabold text-primary shrink-0">£{currentChat.jobPrice}</span>
+                    ) : (
+                      <span className="shrink-0 rounded-md bg-[hsl(25,90%,55%)]/10 px-2 py-0.5 text-[10px] font-bold text-[hsl(25,90%,55%)]">Quote</span>
+                    )}
+                    <span className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[10px] font-bold text-primary-foreground">
+                      <Calendar className="h-3 w-3" />
+                      View Job
+                    </span>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-[13px] font-bold text-foreground truncate">{currentChat.service}</p>
-                    <div className="flex items-center gap-2">
-                      {currentChat.jobPrice ? (
-                        <span className="text-sm font-extrabold text-primary shrink-0">£{currentChat.jobPrice}</span>
-                      ) : (
-                        <span className="shrink-0 rounded-md bg-[hsl(25,90%,55%)]/10 px-2 py-0.5 text-[10px] font-bold text-[hsl(25,90%,55%)]">Quote</span>
-                      )}
-                      <span className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[10px] font-bold text-primary-foreground">
-                        <Calendar className="h-3 w-3" />
-                        View Job
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-                    {currentChat.jobSchedule && (
+                <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                  {currentChat.jobSchedule && (
+                    <span className="inline-flex items-center gap-0.5 truncate">
+                      <Clock className="h-3 w-3 shrink-0" />{currentChat.jobSchedule}
+                    </span>
+                  )}
+                  {currentChat.jobDistance && (
+                    <>
+                      <span className="text-border shrink-0">·</span>
                       <span className="inline-flex items-center gap-0.5 truncate">
-                        <Clock className="h-3 w-3 shrink-0" />{currentChat.jobSchedule}
+                        <MapPin className="h-3 w-3 shrink-0" />{currentChat.jobDistance}
                       </span>
-                    )}
-                    {currentChat.jobDistance && (
-                      <>
-                        <span className="text-border shrink-0">·</span>
-                        <span className="inline-flex items-center gap-0.5 truncate">
-                          <MapPin className="h-3 w-3 shrink-0" />{currentChat.jobDistance}
-                        </span>
-                      </>
-                    )}
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
-              {currentChat.jobStatus && (
-                <div className="mt-2 ml-[52px]">
-                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                    currentChat.jobStatus === "In Progress" 
-                      ? "bg-primary/10 text-primary" 
-                      : currentChat.jobStatus === "Confirmed"
+            </div>
+            {currentChat.jobStatus && (
+              <div className="mt-2 ml-[52px]">
+                <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${currentChat.jobStatus === "In Progress"
+                    ? "bg-primary/10 text-primary"
+                    : currentChat.jobStatus === "Confirmed"
                       ? "bg-primary/10 text-primary"
                       : "bg-secondary text-secondary-foreground"
                   }`}>
-                    {currentChat.jobStatus}
-                  </span>
-                </div>
-              )}
-            </button>
+                  {currentChat.jobStatus}
+                </span>
+              </div>
+            )}
+          </button>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-4">
@@ -463,48 +462,46 @@ const Chat = () => {
                 const isCustomerChat = isTrader && traderTab === "customers" || chats.some(c => c.id === activeChat);
                 const isIncomingCustomerMsg = isTrader && isCustomerChat && msg.sender === "other";
                 return (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <div className="flex flex-col gap-1 max-w-[75%]">
-                    <div
-                      className={`rounded-2xl px-4 py-2.5 ${
-                        msg.sender === "user"
-                          ? "rounded-br-md bg-primary text-primary-foreground"
-                          : "rounded-bl-md bg-card card-shadow text-foreground"
-                      }`}
-                    >
-                      <p className="text-sm leading-relaxed whitespace-pre-line">{msg.text}</p>
-                      <div className="mt-1 flex items-center gap-1 justify-end">
-                        <span
-                          className={`text-[10px] ${
-                            msg.sender === "user" ? "text-primary-foreground/60" : "text-muted-foreground"
+                  <div
+                    key={msg.id}
+                    className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div className="flex flex-col gap-1 max-w-[75%]">
+                      <div
+                        className={`rounded-2xl px-4 py-2.5 ${msg.sender === "user"
+                            ? "rounded-br-md bg-primary text-primary-foreground"
+                            : "rounded-bl-md bg-card card-shadow text-foreground"
                           }`}
-                        >
-                          {msg.time}
-                        </span>
-                        {msg.sender === "user" && (
-                          <span className="flex items-center">
-                            {msg.status === "sent" && <Check className="h-3.5 w-3.5 text-primary-foreground/50" />}
-                            {msg.status === "delivered" && <CheckCheck className="h-3.5 w-3.5 text-primary-foreground/50" />}
-                            {msg.status === "read" && <CheckCheck className="h-3.5 w-3.5 text-info" />}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {/* Forward to team button — only for agency owners on incoming customer messages */}
-                    {isAgencyOwner && isIncomingCustomerMsg && (
-                      <button
-                        onClick={() => forwardToTeam(msg)}
-                        className="flex items-center gap-1.5 self-start rounded-lg bg-accent px-2.5 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-accent/80 transition-colors"
                       >
-                        <Forward className="h-3 w-3" />
-                        Ping to Team
-                      </button>
-                    )}
+                        <p className="text-sm leading-relaxed whitespace-pre-line">{msg.text}</p>
+                        <div className="mt-1 flex items-center gap-1 justify-end">
+                          <span
+                            className={`text-[10px] ${msg.sender === "user" ? "text-primary-foreground/60" : "text-muted-foreground"
+                              }`}
+                          >
+                            {msg.time}
+                          </span>
+                          {msg.sender === "user" && (
+                            <span className="flex items-center">
+                              {msg.status === "sent" && <Check className="h-3.5 w-3.5 text-primary-foreground/50" />}
+                              {msg.status === "delivered" && <CheckCheck className="h-3.5 w-3.5 text-primary-foreground/50" />}
+                              {msg.status === "read" && <CheckCheck className="h-3.5 w-3.5 text-info" />}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {/* Forward to team button — only for agency owners on incoming customer messages */}
+                      {isAgencyOwner && isIncomingCustomerMsg && (
+                        <button
+                          onClick={() => forwardToTeam(msg)}
+                          className="flex items-center gap-1.5 self-start rounded-lg bg-accent px-2.5 py-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-accent/80 transition-colors"
+                        >
+                          <Forward className="h-3 w-3" />
+                          Ping to Team
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
                 );
               })}
             </div>
@@ -534,9 +531,8 @@ const Chat = () => {
               <button
                 onClick={handleSend}
                 disabled={!newMessage.trim()}
-                className={`flex h-10 w-10 items-center justify-center rounded-xl transition-transform active:scale-95 ${
-                  newMessage.trim() ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                }`}
+                className={`flex h-10 w-10 items-center justify-center rounded-xl transition-transform active:scale-95 ${newMessage.trim() ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  }`}
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -558,14 +554,12 @@ const Chat = () => {
           <h1 className="text-2xl font-extrabold text-foreground font-heading">Messages</h1>
           <button
             onClick={() => setShowData(!showData)}
-            className={`relative h-7 w-12 rounded-full transition-colors ${
-              showData ? "bg-primary" : "bg-muted"
-            }`}
+            className={`relative h-7 w-12 rounded-full transition-colors ${showData ? "bg-primary" : "bg-muted"
+              }`}
           >
             <div
-              className={`absolute top-0.5 h-6 w-6 rounded-full bg-card shadow transition-transform ${
-                showData ? "translate-x-5" : "translate-x-0.5"
-              }`}
+              className={`absolute top-0.5 h-6 w-6 rounded-full bg-card shadow transition-transform ${showData ? "translate-x-5" : "translate-x-0.5"
+                }`}
             />
           </button>
         </div>
@@ -575,18 +569,16 @@ const Chat = () => {
           <div className="mb-4 flex gap-2">
             <button
               onClick={() => setTraderTab("customers")}
-              className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition-colors ${
-                traderTab === "customers" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-              }`}
+              className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition-colors ${traderTab === "customers" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                }`}
             >
               <User className="h-3.5 w-3.5" />
               Customers
             </button>
             <button
               onClick={() => setTraderTab("team")}
-              className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition-colors ${
-                traderTab === "team" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-              }`}
+              className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition-colors ${traderTab === "team" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                }`}
             >
               <Users className="h-3.5 w-3.5" />
               Team
@@ -616,11 +608,10 @@ const Chat = () => {
                         <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${getEmojiIconColors(chat.serviceIcon).bg} bg-opacity-40`}><EmojiIcon emoji={chat.serviceIcon} size={14} weight="regular" colorize /></div>
                         <span className="text-xs font-bold text-foreground truncate">{chat.service}</span>
                         {chat.jobStatus && (
-                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold ${
-                            chat.jobStatus === "In Progress" || chat.jobStatus === "Confirmed"
+                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold ${chat.jobStatus === "In Progress" || chat.jobStatus === "Confirmed"
                               ? "bg-primary/10 text-primary"
                               : "bg-secondary text-secondary-foreground"
-                          }`}>
+                            }`}>
                             {chat.jobStatus}
                           </span>
                         )}

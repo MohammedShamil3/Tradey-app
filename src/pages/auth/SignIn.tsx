@@ -130,7 +130,7 @@ const SignIn = () => {
                   <p className="mt-4 text-center text-sm text-muted-foreground">
                     Don't have an account?{" "}
                     <button type="button" onClick={() => navigate("/auth/signup")} className="font-bold text-primary">
-                      Sign Up
+                      Create an account
                     </button>
                   </p>
                 </div>

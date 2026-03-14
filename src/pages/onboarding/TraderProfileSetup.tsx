@@ -121,6 +121,7 @@ const TraderProfileSetup = () => {
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [expandedServiceType, setExpandedServiceType] = useState<string | null>(null);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleService = (serviceId: string) => {
     setSelectedServices((prev) =>
@@ -142,6 +143,25 @@ const TraderProfileSetup = () => {
 
   const getSelectedCountForServiceType = (serviceType: { options: { id: string }[] }) => {
     return serviceType.options.filter((o) => selectedServices.includes(o.id)).length;
+  };
+
+  const toggleAllInServiceType = (serviceType: { options: { id: string }[] }) => {
+    const optionIds = serviceType.options.map((o) => o.id);
+    const allSelected = optionIds.every((id) => selectedServices.includes(id));
+
+    if (allSelected) {
+      // Deselect all
+      setSelectedServices((prev) => prev.filter((id) => !optionIds.includes(id)));
+    } else {
+      // Select all
+      setSelectedServices((prev) => {
+        const newSelected = [...prev];
+        optionIds.forEach((id) => {
+          if (!newSelected.includes(id)) newSelected.push(id);
+        });
+        return newSelected;
+      });
+    }
   };
 
   // Step 3 - Permissions
@@ -262,6 +282,7 @@ const TraderProfileSetup = () => {
     if (step === 1 && activeCategoryId) {
       setActiveCategoryId(null);
       setExpandedServiceType(null);
+      setSearchQuery("");
     } else if (step === 2 && docSubStep > 0) {
       setDocSubStep(docSubStep - 1);
     } else if (step > 0 && step < 4) {
@@ -441,21 +462,56 @@ const TraderProfileSetup = () => {
                   </span>
                 </div>
 
+                <div className="mb-4 relative">
+                  <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
+                    <Sparkles className="h-4 w-4 text-muted-foreground/60" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder={`Search in ${cat.label}...`}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-4 text-xs font-medium text-foreground outline-none placeholder:text-muted-foreground focus:border-primary/50 transition-colors"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery("")}
+                      className="absolute inset-y-0 right-3 flex items-center text-[10px] font-bold text-muted-foreground hover:text-foreground"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
                 <div className="flex flex-col gap-2">
-                  {cat.serviceTypes.map((st) => {
-                    const isExpanded = expandedServiceType === st.id;
+                  {cat.serviceTypes
+                    .filter(st => {
+                      if (!searchQuery) return true;
+                      const q = searchQuery.toLowerCase();
+                      return st.label.toLowerCase().includes(q) || 
+                             st.options.some(o => o.label.toLowerCase().includes(q));
+                    })
+                    .map((st) => {
+                    const isExpanded = expandedServiceType === st.id || (searchQuery.length > 0);
                     const stSelectedCount = getSelectedCountForServiceType(st);
+                    const allSelected = st.options.every(o => selectedServices.includes(o.id));
                     const someSelected = stSelectedCount > 0;
+
+                    const filteredOptions = st.options.filter(o => 
+                      !searchQuery || o.label.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+
+                    if (searchQuery && filteredOptions.length === 0) return null;
 
                     return (
                       <div key={st.id} className="rounded-2xl border-2 border-border bg-card overflow-hidden transition-all">
-                        <button
-                          onClick={() => setExpandedServiceType(isExpanded ? null : st.id)}
-                          className="flex w-full items-center gap-3 p-3.5 text-left active:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex-1 min-w-0">
+                        <div className="flex w-full items-center gap-3 p-3.5 border-b border-transparent group">
+                          <button
+                            onClick={() => setExpandedServiceType(isExpanded && !searchQuery ? null : st.id)}
+                            className="flex-1 min-w-0 text-left"
+                          >
                             <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-bold text-foreground">{st.label}</h4>
+                              <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{st.label}</h4>
                               {someSelected && (
                                 <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
                                   {stSelectedCount}/{st.options.length}
@@ -463,13 +519,29 @@ const TraderProfileSetup = () => {
                               )}
                             </div>
                             <p className="text-[10px] text-muted-foreground">{st.options.length} options</p>
-                          </div>
-                          <ChevronDown className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
-                        </button>
+                          </button>
+                          
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleAllInServiceType(st);
+                            }}
+                            className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${
+                              allSelected ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-muted"
+                            }`}
+                          >
+                            {allSelected ? "Deselect All" : "Select All"}
+                          </button>
+
+                          <ChevronDown 
+                            onClick={() => setExpandedServiceType(isExpanded && !searchQuery ? null : st.id)}
+                            className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""} cursor-pointer`} 
+                          />
+                        </div>
 
                         {isExpanded && (
-                          <div className="border-t border-border">
-                            {st.options.map((option) => {
+                          <div className="bg-muted/30 border-t border-border">
+                            {filteredOptions.map((option) => {
                               const isSelected = selectedServices.includes(option.id);
                               return (
                                 <button
