@@ -124,15 +124,17 @@ const SignIn = () => {
                   </button>
 
                   <SocialSignInButtons />
-
-                  <p className="text-center text-sm text-muted-foreground">
-                    Don't have an account?{" "}
-                    <button type="button" onClick={() => navigate("/auth/signup")} className="font-bold text-primary">
-                      Create an account
-                    </button>
-                  </p>
                 </div>
               </form>
+
+              <div className="mt-auto pb-12">
+                <p className="text-center text-sm text-muted-foreground">
+                  Don't have an account?{" "}
+                  <button type="button" onClick={() => navigate("/auth/signup")} className="font-bold text-primary">
+                    Create an account
+                  </button>
+                </p>
+              </div>
             </>
           ) : (
             <>

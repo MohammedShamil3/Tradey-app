@@ -153,12 +153,24 @@ const TraderHome = () => {
   const traderType = profile?.trader_type ?? "individual";
   const isIndividual = traderType === "individual";
   const isAgencyProfile = traderType === "agency";
-  const pctChange = Math.round(((earningsData.thisWeek - earningsData.lastWeek) / earningsData.lastWeek) * 100);
+  const isNewUser = profile?.full_name === "Demo User";
 
-  const [jobs, setJobs] = useState(initialIncomingJobs);
-  const [scheduleJobs, setScheduleJobs] = useState(activeJobs);
+  const [jobs, setJobs] = useState(isNewUser ? [] : initialIncomingJobs);
+  const [scheduleJobs, setScheduleJobs] = useState(isNewUser ? [] : activeJobs);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [scheduleView, setScheduleView] = useState<"cards" | "calendar">("cards");
+  const [scheduleView, setScheduleView] = useState<"cards" | "calendar" | "empty">("cards");
+
+  const displayEarnings = isNewUser ? {
+    thisWeek: 0,
+    lastWeek: 0,
+    thisMonth: 0,
+    completedJobs: 0,
+    pendingJobs: 0,
+    rating: 0,
+    reviews: 0,
+  } : earningsData;
+
+  const pctChange = isNewUser || displayEarnings.lastWeek === 0 ? 0 : Math.round(((displayEarnings.thisWeek - displayEarnings.lastWeek) / displayEarnings.lastWeek) * 100);
 
   // Dispatch flow state (agency only)
   const [dispatchJobId, setDispatchJobId] = useState<string | null>(null);
@@ -301,33 +313,35 @@ const TraderHome = () => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold text-primary-foreground/70">This Week</p>
-              <h2 className="mt-1 text-3xl font-extrabold text-primary-foreground">£{earningsData.thisWeek}</h2>
+              <h2 className="mt-1 text-3xl font-extrabold text-primary-foreground">£{displayEarnings.thisWeek}</h2>
               <div className="mt-1 flex items-center gap-1">
                 <TrendingUp className="h-3.5 w-3.5 text-primary-foreground/80" />
                 <span className="text-xs font-semibold text-primary-foreground/80">
-                  +{pctChange}% vs last week
+                  {isNewUser ? "Start your first job" : `+${pctChange}% vs last week`}
                 </span>
               </div>
             </div>
             <div className="flex flex-col items-end gap-1">
               <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 fill-star text-star" />
-                <span className="text-lg font-extrabold text-primary-foreground">{earningsData.rating}</span>
+                <Star className={`h-4 w-4 ${displayEarnings.rating > 0 ? "fill-star text-star" : "text-primary-foreground/40"}`} />
+                <span className="text-lg font-extrabold text-primary-foreground">
+                  {displayEarnings.rating > 0 ? displayEarnings.rating : "—"}
+                </span>
               </div>
-              <span className="text-[10px] text-primary-foreground/60">{earningsData.reviews} reviews</span>
+              <span className="text-[10px] text-primary-foreground/60">{displayEarnings.reviews} reviews</span>
             </div>
           </div>
           <div className="mt-4 flex gap-3">
             <div className="flex-1 rounded-xl bg-white/15 p-3 text-center">
-              <p className="text-lg font-extrabold text-primary-foreground">{earningsData.completedJobs}</p>
+              <p className="text-lg font-extrabold text-primary-foreground">{displayEarnings.completedJobs}</p>
               <p className="text-[10px] text-primary-foreground/70">Completed</p>
             </div>
             <div className="flex-1 rounded-xl bg-white/15 p-3 text-center">
-              <p className="text-lg font-extrabold text-primary-foreground">{earningsData.pendingJobs}</p>
+              <p className="text-lg font-extrabold text-primary-foreground">{displayEarnings.pendingJobs}</p>
               <p className="text-[10px] text-primary-foreground/70">Pending</p>
             </div>
             <div className="flex-1 rounded-xl bg-white/15 p-3 text-center">
-              <p className="text-lg font-extrabold text-primary-foreground">£{earningsData.thisMonth}</p>
+              <p className="text-lg font-extrabold text-primary-foreground">£{displayEarnings.thisMonth}</p>
               <p className="text-[10px] text-primary-foreground/70">This Month</p>
             </div>
           </div>
@@ -383,31 +397,13 @@ const TraderHome = () => {
 
         {/* Today's Schedule */}
         <div>
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-primary" />
-              <h3 className="font-bold text-foreground">Today's Schedule</h3>
-              <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-secondary-foreground">
-                {scheduleJobs.filter(j => j.date.startsWith("Today")).length} today
-              </span>
+          {scheduleJobs.length === 0 ? (
+            <div className="flex flex-col items-center rounded-2xl bg-card p-8 border border-dashed border-border text-center">
+              <Calendar className="mb-2 h-8 w-8 text-muted-foreground/30" />
+              <p className="text-sm font-semibold text-foreground">No jobs scheduled</p>
+              <p className="text-xs text-muted-foreground">Accept an incoming job to see it here</p>
             </div>
-            <div className="flex rounded-lg bg-muted p-0.5">
-              <button
-                onClick={() => setScheduleView("cards")}
-                className={`flex items-center justify-center rounded-md p-1.5 transition-all ${scheduleView === "cards" ? "bg-card card-shadow" : ""}`}
-              >
-                <LayoutGrid className={`h-3.5 w-3.5 ${scheduleView === "cards" ? "text-foreground" : "text-muted-foreground"}`} />
-              </button>
-              <button
-                onClick={() => setScheduleView("calendar")}
-                className={`flex items-center justify-center rounded-md p-1.5 transition-all ${scheduleView === "calendar" ? "bg-card card-shadow" : ""}`}
-              >
-                <CalendarDays className={`h-3.5 w-3.5 ${scheduleView === "calendar" ? "text-foreground" : "text-muted-foreground"}`} />
-              </button>
-            </div>
-          </div>
-
-          {scheduleView === "cards" ? (
+          ) : scheduleView === "cards" ? (
             <div className="flex flex-col gap-2.5">
               {scheduleJobs.map((job, i) => {
                 const showCrew = !isIndividual && isWithinWindow(job.startHour);
