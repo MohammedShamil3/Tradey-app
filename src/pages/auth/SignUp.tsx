@@ -162,7 +162,7 @@ const SignUp = () => {
                   {loading ? "Sending code..." : "Send Verification Code"}
                 </button>
 
-                <div className="mt-auto pb-12">
+                <div className="mt-8 pb-12">
                   <SocialSignInButtons />
 
                   <p className="mt-4 text-center text-sm text-muted-foreground">
