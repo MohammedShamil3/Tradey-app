@@ -240,6 +240,8 @@ const TraderProfileSetup = () => {
         street: street.trim(),
         city: city.trim(),
         postcode: postcode.trim(),
+        role: "trader",
+        trader_type: "individual",
         onboarding_status: "completed",
       });
       setLoading(false);
