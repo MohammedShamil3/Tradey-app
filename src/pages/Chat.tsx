@@ -239,7 +239,7 @@ const traderTeamChats: ChatThread[] = [
 const Chat = () => {
   const navigate = useNavigate();
   const { profile } = useAuth();
-  const isTrader = profile?.role === "trader";
+  const isTrader = true; // Strictly forced to trader flow
   const traderType = profile?.trader_type ?? "individual";
   const isAgencyOwner = isTrader && traderType === "agency";
   const isIndividualTrader = isTrader && !isAgencyOwner;
@@ -363,15 +363,6 @@ const Chat = () => {
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
                   <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-xl bg-card border border-border card-shadow overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                    {!isTrader && (
-                      <button
-                        onClick={() => { navigate(`/traders/${currentChat.contactId}`); setShowMenu(false); }}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-foreground active:bg-muted/60 border-b border-border"
-                      >
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        View Profile
-                      </button>
-                    )}
                     <button
                       onClick={() => setShowMenu(false)}
                       className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-foreground active:bg-muted/60 border-b border-border"
@@ -406,27 +397,6 @@ const Chat = () => {
             </div>
           </div>
 
-          {/* Context bar — role-specific */}
-          {!isTrader ? (
-            <div className="border-b border-border bg-primary/5 px-4 py-2">
-              <button
-                onClick={() => navigate(`/traders/${currentChat.contactId}`)}
-                className="flex w-full items-center gap-2 text-left"
-              >
-                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${getEmojiIconColors(currentChat.serviceIcon).bg} bg-opacity-40`}>
-                  <EmojiIcon emoji={currentChat.serviceIcon} size={16} weight="regular" colorize />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs font-semibold text-foreground">Book {currentChat.contactName.split(" ")[0]}</p>
-                  <p className="text-[10px] text-muted-foreground">{currentChat.service}</p>
-                </div>
-                <span className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[10px] font-bold text-primary-foreground">
-                  <Calendar className="h-3 w-3" />
-                  Book
-                </span>
-              </button>
-            </div>
-          ) : (
             <button
               onClick={() => navigate("/trader/jobs")}
               className="w-full border-b border-border bg-accent/40 px-4 py-3 text-left active:bg-accent/60 transition-colors"
@@ -438,11 +408,17 @@ const Chat = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-[13px] font-bold text-foreground truncate">{currentChat.service}</p>
-                    {currentChat.jobPrice ? (
-                      <span className="text-sm font-extrabold text-primary shrink-0">£{currentChat.jobPrice}</span>
-                    ) : (
-                      <span className="shrink-0 rounded-md bg-[hsl(25,90%,55%)]/10 px-2 py-0.5 text-[10px] font-bold text-[hsl(25,90%,55%)]">Quote</span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {currentChat.jobPrice ? (
+                        <span className="text-sm font-extrabold text-primary shrink-0">£{currentChat.jobPrice}</span>
+                      ) : (
+                        <span className="shrink-0 rounded-md bg-[hsl(25,90%,55%)]/10 px-2 py-0.5 text-[10px] font-bold text-[hsl(25,90%,55%)]">Quote</span>
+                      )}
+                      <span className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[10px] font-bold text-primary-foreground">
+                        <Calendar className="h-3 w-3" />
+                        View Job
+                      </span>
+                    </div>
                   </div>
                   <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                     {currentChat.jobSchedule && (
@@ -475,7 +451,6 @@ const Chat = () => {
                 </div>
               )}
             </button>
-          )}
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-4">
@@ -573,12 +548,8 @@ const Chat = () => {
   }
 
   // Chat list view
-  const emptyMessage = isTrader
-    ? "Chats appear here when customers book your services"
-    : "Chats appear here once you book a service";
-  const emptyAction = isTrader
-    ? { label: "View Jobs", route: "/trader/jobs" }
-    : { label: "Browse Services", route: "/services" };
+  const emptyMessage = "Chats appear here once you receive job requests";
+  const emptyAction = { label: "View Active Jobs", route: "/trader/jobs" };
 
   return (
     <MobileLayout role={isTrader ? "trader" : "customer"}>
