@@ -84,7 +84,7 @@ const SignUp = () => {
       }
     } else {
       toast.success("Account created!");
-      navigate("/onboarding/role", { replace: true });
+      navigate("/", { replace: true });
     }
   };
 
