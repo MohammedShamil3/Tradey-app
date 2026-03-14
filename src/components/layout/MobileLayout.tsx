@@ -9,6 +9,7 @@ export interface MobileLayoutProps {
 
 const MobileLayout = ({ children, role }: MobileLayoutProps) => {
   const { profile } = useAuth();
+  const effectiveRole = role ?? (profile?.role === "trader" ? "trader" : "customer");
   const traderType = profile?.trader_type ?? null;
 
   return (
@@ -21,7 +22,7 @@ const MobileLayout = ({ children, role }: MobileLayoutProps) => {
           <main className="flex-1 overflow-y-auto pb-28 pt-2">
             {children}
           </main>
-          <BottomNav role={role} traderType={traderType} />
+          <BottomNav role={effectiveRole} traderType={traderType} />
         </div>
         <div className="absolute bottom-2 left-1/2 z-50 h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-foreground/30" />
       </div>
