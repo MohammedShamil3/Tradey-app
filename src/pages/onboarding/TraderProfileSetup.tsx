@@ -5,8 +5,8 @@ import {
   ArrowLeft, User, MapPin, Building2, Camera, FileText, Shield,
   CheckCircle2, ChevronRight, Upload, AlertTriangle, Fingerprint,
   CreditCard, HardHat, Scale, ClipboardCheck, ChevronDown,
-  Bell, MapPinned, Mic, PartyPopper, Sparkles,
-} from "lucide-react";
+  Bell, MapPinned, Mic, PartyPopper, Sparkles } from
+"lucide-react";
 import { toast } from "sonner";
 import { serviceCategories, catAServices, catBServices, getAllServices } from "@/data/services";
 import { categoryServiceTypes } from "@/data/serviceTypes";
@@ -26,81 +26,81 @@ interface DocumentRequirement {
 }
 
 const requiredDocuments: DocumentRequirement[] = [
-  {
-    id: "gov-id",
-    label: "Government-Issued Photo ID",
-    description: "Valid passport or UK driving licence",
-    icon: CreditCard,
-    mandatory: true,
-    acceptedFormats: "JPG, PNG, PDF",
-    helpText: "Must be current and not expired. Used to verify your identity and right to work in the UK.",
-    hasFrontBack: true,
-  },
-  {
-    id: "proof-address",
-    label: "Proof of Address",
-    description: "Utility bill or bank statement (last 3 months)",
-    icon: MapPin,
-    mandatory: true,
-    acceptedFormats: "JPG, PNG, PDF",
-    helpText: "Must be dated within the last 3 months showing your name and current address.",
-  },
-  {
-    id: "right-to-work",
-    label: "Right to Work in UK",
-    description: "Share code, visa, or UK/Irish passport",
-    icon: Scale,
-    mandatory: true,
-    acceptedFormats: "JPG, PNG, PDF",
-    helpText: "Under the Immigration, Asylum and Nationality Act 2006, we must verify your right to work in the UK before you can take on jobs.",
-    hasFrontBack: true,
-  },
-  {
-    id: "public-liability",
-    label: "Public Liability Insurance",
-    description: "Minimum £1M cover required",
-    icon: Shield,
-    mandatory: true,
-    acceptedFormats: "PDF, JPG, PNG",
-    helpText: "Public liability insurance protects you and your customers. Most platforms and clients require a minimum of £1,000,000 cover.",
-  },
-  {
-    id: "trade-qualifications",
-    label: "Trade Qualifications / Certifications",
-    description: "NVQ, City & Guilds, Gas Safe, NICEIC, CSCS, etc.",
-    icon: ClipboardCheck,
-    mandatory: true,
-    acceptedFormats: "PDF, JPG, PNG",
-    helpText: "Upload your relevant trade qualifications. For regulated trades: Gas Safe registration (gas work), NICEIC/Part P (electrical), CSCS card (construction).",
-  },
-  {
-    id: "dbs-check",
-    label: "DBS Certificate",
-    description: "Basic or Enhanced Disclosure & Barring Service check",
-    icon: Fingerprint,
-    mandatory: true,
-    acceptedFormats: "PDF, JPG, PNG",
-    helpText: "A DBS check ensures customer safety. If you don't have one, you can apply at gov.uk/request-copy-criminal-record. Must be dated within the last 12 months.",
-  },
-  {
-    id: "selfie-verification",
-    label: "Selfie for Identity Match",
-    description: "A clear photo of your face for biometric verification",
-    icon: Camera,
-    mandatory: true,
-    acceptedFormats: "JPG, PNG",
-    helpText: "We'll match this photo against your government ID to confirm your identity. Please ensure your face is clearly visible with good lighting.",
-  },
-  {
-    id: "professional-indemnity",
-    label: "Professional Indemnity Insurance",
-    description: "Recommended for advisory/design trades",
-    icon: HardHat,
-    mandatory: false,
-    acceptedFormats: "PDF, JPG, PNG",
-    helpText: "Required if your work involves advice, design, or project management. Protects against claims of negligent advice or design errors.",
-  },
-];
+{
+  id: "gov-id",
+  label: "Government-Issued Photo ID",
+  description: "Valid passport or UK driving licence",
+  icon: CreditCard,
+  mandatory: true,
+  acceptedFormats: "JPG, PNG, PDF",
+  helpText: "Must be current and not expired. Used to verify your identity and right to work in the UK.",
+  hasFrontBack: true
+},
+{
+  id: "proof-address",
+  label: "Proof of Address",
+  description: "Utility bill or bank statement (last 3 months)",
+  icon: MapPin,
+  mandatory: true,
+  acceptedFormats: "JPG, PNG, PDF",
+  helpText: "Must be dated within the last 3 months showing your name and current address."
+},
+{
+  id: "right-to-work",
+  label: "Right to Work in UK",
+  description: "Share code, visa, or UK/Irish passport",
+  icon: Scale,
+  mandatory: true,
+  acceptedFormats: "JPG, PNG, PDF",
+  helpText: "Under the Immigration, Asylum and Nationality Act 2006, we must verify your right to work in the UK before you can take on jobs.",
+  hasFrontBack: true
+},
+{
+  id: "public-liability",
+  label: "Public Liability Insurance",
+  description: "Minimum £1M cover required",
+  icon: Shield,
+  mandatory: true,
+  acceptedFormats: "PDF, JPG, PNG",
+  helpText: "Public liability insurance protects you and your customers. Most platforms and clients require a minimum of £1,000,000 cover."
+},
+{
+  id: "trade-qualifications",
+  label: "Trade Qualifications / Certifications",
+  description: "NVQ, City & Guilds, Gas Safe, NICEIC, CSCS, etc.",
+  icon: ClipboardCheck,
+  mandatory: true,
+  acceptedFormats: "PDF, JPG, PNG",
+  helpText: "Upload your relevant trade qualifications. For regulated trades: Gas Safe registration (gas work), NICEIC/Part P (electrical), CSCS card (construction)."
+},
+{
+  id: "dbs-check",
+  label: "DBS Certificate",
+  description: "Basic or Enhanced Disclosure & Barring Service check",
+  icon: Fingerprint,
+  mandatory: true,
+  acceptedFormats: "PDF, JPG, PNG",
+  helpText: "A DBS check ensures customer safety. If you don't have one, you can apply at gov.uk/request-copy-criminal-record. Must be dated within the last 12 months."
+},
+{
+  id: "selfie-verification",
+  label: "Selfie for Identity Match",
+  description: "A clear photo of your face for biometric verification",
+  icon: Camera,
+  mandatory: true,
+  acceptedFormats: "JPG, PNG",
+  helpText: "We'll match this photo against your government ID to confirm your identity. Please ensure your face is clearly visible with good lighting."
+},
+{
+  id: "professional-indemnity",
+  label: "Professional Indemnity Insurance",
+  description: "Recommended for advisory/design trades",
+  icon: HardHat,
+  mandatory: false,
+  acceptedFormats: "PDF, JPG, PNG",
+  helpText: "Required if your work involves advice, design, or project management. Protects against claims of negligent advice or design errors."
+}];
+
 
 const TraderProfileSetup = () => {
   const navigate = useNavigate();
@@ -125,7 +125,7 @@ const TraderProfileSetup = () => {
 
   const toggleService = (serviceId: string) => {
     setSelectedServices((prev) =>
-      prev.includes(serviceId) ? prev.filter((s) => s !== serviceId) : [...prev, serviceId]
+    prev.includes(serviceId) ? prev.filter((s) => s !== serviceId) : [...prev, serviceId]
     );
   };
 
@@ -141,11 +141,11 @@ const TraderProfileSetup = () => {
     return cat.serviceTypes.flatMap((st) => st.options).length;
   };
 
-  const getSelectedCountForServiceType = (serviceType: { options: { id: string }[] }) => {
+  const getSelectedCountForServiceType = (serviceType: {options: {id: string;}[];}) => {
     return serviceType.options.filter((o) => selectedServices.includes(o.id)).length;
   };
 
-  const toggleAllInServiceType = (serviceType: { options: { id: string }[] }) => {
+  const toggleAllInServiceType = (serviceType: {options: {id: string;}[];}) => {
     const optionIds = serviceType.options.map((o) => o.id);
     const allSelected = optionIds.every((id) => selectedServices.includes(id));
 
@@ -169,7 +169,7 @@ const TraderProfileSetup = () => {
     notifications: false,
     location: false,
     camera: false,
-    microphone: false,
+    microphone: false
   });
 
   const togglePermission = (key: string) => {
@@ -178,7 +178,7 @@ const TraderProfileSetup = () => {
 
   // Step 2 - Documents
   const [docSubStep, setDocSubStep] = useState(0);
-  const [uploadedDocs, setUploadedDocs] = useState<Record<string, { fileName: string; uploadedAt: string }>>({});
+  const [uploadedDocs, setUploadedDocs] = useState<Record<string, {fileName: string;uploadedAt: string;}>>({});
 
   const mandatoryDocs = requiredDocuments.filter((d) => d.mandatory);
   const optionalDocs = requiredDocuments.filter((d) => !d.mandatory);
@@ -220,8 +220,8 @@ const TraderProfileSetup = () => {
           ...prev,
           [docId]: {
             fileName: file.name,
-            uploadedAt: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
-          },
+            uploadedAt: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+          }
         }));
         toast.success(method === "camera" ? "Photo captured!" : "Document uploaded!");
 
@@ -262,7 +262,7 @@ const TraderProfileSetup = () => {
         postcode: postcode.trim(),
         role: "trader",
         trader_type: "individual",
-        onboarding_status: "completed",
+        onboarding_status: "completed"
       });
       setLoading(false);
       if (error) {
@@ -302,53 +302,53 @@ const TraderProfileSetup = () => {
         </div>
 
         <div className="flex h-full flex-col px-6 pt-14">
-          {step < 4 && (
-            <button onClick={handleBack} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+          {step < 4 &&
+          <button onClick={handleBack} className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
               <ArrowLeft className="h-5 w-5 text-foreground" />
             </button>
-          )}
+          }
 
-          {step < 4 && (
-            <>
+          {step < 4 &&
+          <>
               <h1 className="mb-1 text-2xl font-bold text-foreground font-heading">
                 {step === 0 ? "Basic Details" : step === 1 ? "Your Services" : step === 2 ? "Document Upload" : "App Permissions"}
               </h1>
               <p className="mb-2 text-sm text-muted-foreground">
-                {step === 0
-                  ? "Tell us about yourself"
-                  : step === 1
-                  ? "Select the services you offer"
-                  : step === 2
-                  ? `Upload required documents (${uploadedMandatoryCount}/${mandatoryDocs.length})`
-                  : "Allow permissions for the best experience"}
+                {step === 0 ?
+              "Tell us about yourself" :
+              step === 1 ?
+              "Select the services you offer" :
+              step === 2 ?
+              `Upload required documents (${uploadedMandatoryCount}/${mandatoryDocs.length})` :
+              "Allow permissions for the best experience"}
               </p>
 
               {/* Main step progress */}
               <div className="mb-4 flex gap-2">
-                {mainSteps.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-1 flex-1 rounded-full transition-all ${
-                      i <= step ? "bg-primary" : "bg-muted"
-                    }`}
-                  />
-                ))}
+                {mainSteps.map((_, i) =>
+              <div
+                key={i}
+                className={`h-1 flex-1 rounded-full transition-all ${
+                i <= step ? "bg-primary" : "bg-muted"}`
+                } />
+
+              )}
               </div>
             </>
-          )}
+          }
 
           {/* Step 0: Business details */}
-          {step === 0 && (
-            <div className="flex flex-1 flex-col gap-3.5 overflow-y-auto pb-4">
+          {step === 0 &&
+          <div className="flex flex-1 flex-col gap-3.5 overflow-y-auto pb-4">
               <div>
                 <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Full name *</label>
                 <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5">
                   <User className="h-5 w-5 text-muted-foreground" />
                   <input
-                    type="text" placeholder="John Smith" value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
+                  type="text" placeholder="John Smith" value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+                
                 </div>
               </div>
               <div>
@@ -356,10 +356,10 @@ const TraderProfileSetup = () => {
                 <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5">
                   <Building2 className="h-5 w-5 text-muted-foreground" />
                   <input
-                    type="text" placeholder="Smith Plumbing Ltd" value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
+                  type="text" placeholder="Smith Plumbing Ltd" value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+                
                 </div>
               </div>
               <div>
@@ -367,10 +367,10 @@ const TraderProfileSetup = () => {
                 <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5">
                   <Shield className="h-5 w-5 text-muted-foreground" />
                   <input
-                    type="number" placeholder="e.g. 5" value={yearsExperience}
-                    onChange={(e) => setYearsExperience(e.target.value)}
-                    className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
+                  type="number" placeholder="e.g. 5" value={yearsExperience}
+                  onChange={(e) => setYearsExperience(e.target.value)}
+                  className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+                
                 </div>
               </div>
               <div>
@@ -378,10 +378,10 @@ const TraderProfileSetup = () => {
                 <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5">
                   <MapPin className="h-5 w-5 text-muted-foreground" />
                   <input
-                    type="text" placeholder="123 Main Street" value={street}
-                    onChange={(e) => setStreet(e.target.value)}
-                    className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
+                  type="text" placeholder="123 Main Street" value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                  className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+                
                 </div>
               </div>
               <div className="flex gap-3">
@@ -389,64 +389,64 @@ const TraderProfileSetup = () => {
                   <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Postcode *</label>
                   <div className="flex items-center rounded-2xl border border-border bg-card px-4 py-3.5">
                     <input
-                      type="text" placeholder="SW1A 1AA" value={postcode}
-                      onChange={(e) => setPostcode(e.target.value)}
-                      className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                    />
+                    type="text" placeholder="SW1A 1AA" value={postcode}
+                    onChange={(e) => setPostcode(e.target.value)}
+                    className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+                  
                   </div>
                 </div>
                 <div className="flex-1">
                   <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">City *</label>
                   <div className="flex items-center rounded-2xl border border-border bg-card px-4 py-3.5">
                     <input
-                      type="text" placeholder="London" value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                    />
+                    type="text" placeholder="London" value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+                  
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          }
 
           {/* Step 1: Services — category list or category subpage */}
-          {step === 1 && !activeCategoryId && (
-            <div className="flex flex-1 flex-col gap-3 overflow-y-auto pb-4">
+          {step === 1 && !activeCategoryId &&
+          <div className="flex flex-1 flex-col gap-3 overflow-y-auto pb-4">
               <p className="text-xs text-muted-foreground">
                 Tap a category to select the services you offer · {selectedServices.length} selected
               </p>
 
               <div className="flex flex-col gap-2.5">
                 {categoryServiceTypes.map((cat) => {
-                  const selectedCount = getSelectedCountForCategory(cat.categoryId);
-                  const totalCount = getTotalCountForCategory(cat.categoryId);
-                  const someSelected = selectedCount > 0;
+                const selectedCount = getSelectedCountForCategory(cat.categoryId);
+                const totalCount = getTotalCountForCategory(cat.categoryId);
+                const someSelected = selectedCount > 0;
 
-                  return (
-                    <button
-                      key={cat.categoryId}
-                      onClick={() => setActiveCategoryId(cat.categoryId)}
-                      className="flex w-full items-center gap-3 rounded-2xl border-2 border-border bg-card p-4 text-left transition-all active:scale-[0.98]"
-                    >
-                      {(() => { const n = categoryIconMap[cat.categoryId] || "wrench"; const I = iconMap[n]; const c = categoryColorMap[cat.categoryId]; return I ? <I size={24} weight="regular" className={c?.color || "text-muted-foreground"} /> : null; })()}
+                return (
+                  <button
+                    key={cat.categoryId}
+                    onClick={() => setActiveCategoryId(cat.categoryId)}
+                    className="flex w-full items-center gap-3 rounded-2xl border-2 border-border bg-card p-4 text-left transition-all active:scale-[0.98]">
+                    
+                      {(() => {const n = categoryIconMap[cat.categoryId] || "wrench";const I = iconMap[n];const c = categoryColorMap[cat.categoryId];return I ? <I size={24} weight="regular" className={c?.color || "text-muted-foreground"} /> : null;})()}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <h4 className="text-sm font-bold text-foreground">{cat.label}</h4>
-                          {someSelected && (
-                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                          {someSelected &&
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
                               {selectedCount}/{totalCount}
                             </span>
-                          )}
+                        }
                         </div>
                         <p className="text-[10px] text-muted-foreground">{totalCount} services available</p>
                       </div>
                       <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                    </button>
-                  );
-                })}
+                    </button>);
+
+              })}
               </div>
             </div>
-          )}
+          }
 
           {/* Step 1 subpage: service types with expandable options */}
           {step === 1 && activeCategoryId && (() => {
@@ -471,34 +471,34 @@ const TraderProfileSetup = () => {
                     placeholder={`Search in ${cat.label}...`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-4 text-xs font-medium text-foreground outline-none placeholder:text-muted-foreground focus:border-primary/50 transition-colors"
-                  />
-                  {searchQuery && (
-                    <button 
-                      onClick={() => setSearchQuery("")}
-                      className="absolute inset-y-0 right-3 flex items-center text-[10px] font-bold text-muted-foreground hover:text-foreground"
-                    >
+                    className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-4 text-xs font-medium text-foreground outline-none placeholder:text-muted-foreground focus:border-primary/50 transition-colors" />
+                  
+                  {searchQuery &&
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute inset-y-0 right-3 flex items-center text-[10px] font-bold text-muted-foreground hover:text-foreground">
+                    
                       Clear
                     </button>
-                  )}
+                  }
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  {cat.serviceTypes
-                    .filter(st => {
-                      if (!searchQuery) return true;
-                      const q = searchQuery.toLowerCase();
-                      return st.label.toLowerCase().includes(q) || 
-                             st.options.some(o => o.label.toLowerCase().includes(q));
-                    })
-                    .map((st) => {
-                    const isExpanded = expandedServiceType === st.id || (searchQuery.length > 0);
+                  {cat.serviceTypes.
+                  filter((st) => {
+                    if (!searchQuery) return true;
+                    const q = searchQuery.toLowerCase();
+                    return st.label.toLowerCase().includes(q) ||
+                    st.options.some((o) => o.label.toLowerCase().includes(q));
+                  }).
+                  map((st) => {
+                    const isExpanded = expandedServiceType === st.id || searchQuery.length > 0;
                     const stSelectedCount = getSelectedCountForServiceType(st);
-                    const allSelected = st.options.every(o => selectedServices.includes(o.id));
+                    const allSelected = st.options.every((o) => selectedServices.includes(o.id));
                     const someSelected = stSelectedCount > 0;
 
-                    const filteredOptions = st.options.filter(o => 
-                      !searchQuery || o.label.toLowerCase().includes(searchQuery.toLowerCase())
+                    const filteredOptions = st.options.filter((o) =>
+                    !searchQuery || o.label.toLowerCase().includes(searchQuery.toLowerCase())
                     );
 
                     if (searchQuery && filteredOptions.length === 0) return null;
@@ -508,122 +508,122 @@ const TraderProfileSetup = () => {
                         <div className="flex w-full items-center gap-3 p-3.5 border-b border-transparent group">
                           <button
                             onClick={() => setExpandedServiceType(isExpanded && !searchQuery ? null : st.id)}
-                            className="flex-1 min-w-0 text-left"
-                          >
+                            className="flex-1 min-w-0 text-left">
+                            
                             <div className="flex items-center gap-2">
                               <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{st.label}</h4>
-                              {someSelected && (
-                                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                              {someSelected &&
+                              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
                                   {stSelectedCount}/{st.options.length}
                                 </span>
-                              )}
+                              }
                             </div>
                             <p className="text-[10px] text-muted-foreground">{st.options.length} options</p>
                           </button>
 
-                          <ChevronDown 
+                          <ChevronDown
                             onClick={() => setExpandedServiceType(isExpanded && !searchQuery ? null : st.id)}
-                            className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""} cursor-pointer`} 
-                          />
+                            className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""} cursor-pointer`} />
+                          
                         </div>
 
-                        {isExpanded && (
-                          <div className="bg-muted/30 border-t border-border">
+                        {isExpanded &&
+                        <div className="bg-muted/30 border-t border-border">
                             {/* Select All Row */}
-                            {!searchQuery && (
-                              <button
-                                onClick={() => toggleAllInServiceType(st)}
-                                className="flex w-full items-center gap-3 px-4 py-3 text-left border-b border-border bg-primary/5 active:bg-primary/10 transition-colors"
-                              >
+                            {!searchQuery &&
+                          <button
+                            onClick={() => toggleAllInServiceType(st)}
+                            className="flex w-full items-center gap-3 px-4 py-3 text-left border-b border-border bg-primary/5 active:bg-primary/10 transition-colors">
+                            
                                 <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
-                                  allSelected ? "border-primary bg-primary" : "border-border"
-                                }`}>
+                            allSelected ? "border-primary bg-primary" : "border-border"}`
+                            }>
                                   {allSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />}
                                 </div>
                                 <p className="text-xs font-bold text-primary">
                                   {allSelected ? "Deselect all services" : `Select all ${st.label.toLowerCase()} services`}
                                 </p>
                               </button>
-                            )}
+                          }
 
                             {filteredOptions.map((option) => {
-                              const isSelected = selectedServices.includes(option.id);
-                              return (
-                                <button
-                                  key={option.id}
-                                  onClick={() => toggleService(option.id)}
-                                  className="flex w-full items-center gap-3 px-4 py-3 text-left border-b border-border last:border-b-0 active:bg-muted/50 transition-colors"
-                                >
+                            const isSelected = selectedServices.includes(option.id);
+                            return (
+                              <button
+                                key={option.id}
+                                onClick={() => toggleService(option.id)}
+                                className="flex w-full items-center gap-3 px-4 py-3 text-left border-b border-border last:border-b-0 active:bg-muted/50 transition-colors">
+                                
                                   <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
-                                    isSelected ? "border-primary bg-primary" : "border-border"
-                                  }`}>
+                                isSelected ? "border-primary bg-primary" : "border-border"}`
+                                }>
                                     {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />}
                                   </div>
                                   <p className="text-xs font-semibold text-foreground">{option.label}</p>
-                                </button>
-                              );
-                            })}
+                                </button>);
+
+                          })}
                           </div>
-                        )}
-                      </div>
-                    );
+                        }
+                      </div>);
+
                   })}
                 </div>
-              </div>
-            );
+              </div>);
+
           })()}
 
           {/* Step 2: Document upload — one at a time */}
-          {step === 2 && currentDoc && (
-            <div className="flex flex-1 flex-col overflow-y-auto pb-4">
+          {step === 2 && currentDoc &&
+          <div className="flex flex-1 flex-col overflow-y-auto pb-4">
               {/* Document sub-step progress */}
               <div className="mb-4 flex gap-1">
-                {requiredDocuments.map((doc, i) => (
-                  <button
-                    key={doc.id}
-                    onClick={() => setDocSubStep(i)}
-                    className={`h-1.5 flex-1 rounded-full transition-all ${
-                      isDocFullyUploaded(doc)
-                        ? "bg-primary"
-                        : i === docSubStep
-                        ? "bg-primary/40"
-                        : "bg-muted"
-                    }`}
-                  />
-                ))}
+                {requiredDocuments.map((doc, i) =>
+              <button
+                key={doc.id}
+                onClick={() => setDocSubStep(i)}
+                className={`h-1.5 flex-1 rounded-full transition-all ${
+                isDocFullyUploaded(doc) ?
+                "bg-primary" :
+                i === docSubStep ?
+                "bg-primary/40" :
+                "bg-muted"}`
+                } />
+
+              )}
               </div>
 
               {/* Current document card */}
               <div className="flex flex-col gap-4">
                 <div className={`flex items-center gap-3 rounded-2xl p-4 ${
-                  isDocFullyUploaded(currentDoc) ? "bg-primary/5" : "bg-accent/50"
-                }`}>
+              isDocFullyUploaded(currentDoc) ? "bg-primary/5" : "bg-accent/50"}`
+              }>
                   <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${
-                    isDocFullyUploaded(currentDoc) ? "bg-primary" : "bg-muted"
-                  }`}>
+                isDocFullyUploaded(currentDoc) ? "bg-primary" : "bg-muted"}`
+                }>
                     <currentDoc.icon className={`h-7 w-7 ${
-                      isDocFullyUploaded(currentDoc) ? "text-primary-foreground" : "text-muted-foreground"
-                    }`} />
+                  isDocFullyUploaded(currentDoc) ? "text-primary-foreground" : "text-muted-foreground"}`
+                  } />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-bold text-foreground">{currentDoc.label}</h3>
-                      {currentDoc.mandatory && !isDocFullyUploaded(currentDoc) && (
-                        <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[9px] font-bold text-destructive">
+                      {currentDoc.mandatory && !isDocFullyUploaded(currentDoc) &&
+                    <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[9px] font-bold text-destructive">
                           Required
                         </span>
-                      )}
-                      {currentDoc.hasFrontBack && (
-                        <span className="rounded-full bg-accent px-2 py-0.5 text-[9px] font-bold text-muted-foreground">
-                          Front + Back
-                        </span>
-                      )}
+                    }
+                      {currentDoc.hasFrontBack
+
+
+
+                    }
                     </div>
                     <p className="mt-0.5 text-xs text-muted-foreground">{currentDoc.description}</p>
                   </div>
-                  {isDocFullyUploaded(currentDoc) && (
-                    <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" />
-                  )}
+                  {isDocFullyUploaded(currentDoc) &&
+                <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" />
+                }
                 </div>
 
                 {/* Info box */}
@@ -641,18 +641,18 @@ const TraderProfileSetup = () => {
 
                 {/* Upload area */}
                 {currentDoc.hasFrontBack ? (
-                  /* Front & Back upload for ID-type documents */
-                  <div className="flex flex-col gap-3">
+              /* Front & Back upload for ID-type documents */
+              <div className="flex flex-col gap-3">
                     {(["front", "back"] as const).map((side) => {
-                      const key = `${currentDoc.id}-${side}`;
-                      const uploaded = uploadedDocs[key];
-                      return (
-                        <div key={side}>
+                  const key = `${currentDoc.id}-${side}`;
+                  const uploaded = uploadedDocs[key];
+                  return (
+                    <div key={side}>
                           <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                             {side === "front" ? "📄 Front Side" : "📄 Back Side"}
                           </p>
-                          {uploaded ? (
-                            <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-4">
+                          {uploaded ?
+                      <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-4">
                               <div className="flex items-center gap-3">
                                 <CheckCircle2 className="h-8 w-8 text-primary shrink-0" />
                                 <div className="flex-1 min-w-0">
@@ -664,13 +664,13 @@ const TraderProfileSetup = () => {
                                   <button onClick={() => handleDocUpload(key, "file")} className="text-[10px] font-semibold text-primary">Replace</button>
                                 </div>
                               </div>
-                            </div>
-                          ) : (
-                            <div className="flex gap-2.5">
+                            </div> :
+
+                      <div className="flex gap-2.5">
                               <button
-                                onClick={() => handleDocUpload(key, "camera")}
-                                className="flex-1 rounded-xl border-2 border-dashed border-border bg-card p-4 transition-all active:scale-[0.98] active:border-primary"
-                              >
+                          onClick={() => handleDocUpload(key, "camera")}
+                          className="flex-1 rounded-xl border-2 border-dashed border-border bg-card p-4 transition-all active:scale-[0.98] active:border-primary">
+                          
                                 <div className="flex flex-col items-center gap-2 text-center">
                                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                                     <Camera className="h-5 w-5 text-primary" />
@@ -679,9 +679,9 @@ const TraderProfileSetup = () => {
                                 </div>
                               </button>
                               <button
-                                onClick={() => handleDocUpload(key, "file")}
-                                className="flex-1 rounded-xl border-2 border-dashed border-border bg-card p-4 transition-all active:scale-[0.98] active:border-primary"
-                              >
+                          onClick={() => handleDocUpload(key, "file")}
+                          className="flex-1 rounded-xl border-2 border-dashed border-border bg-card p-4 transition-all active:scale-[0.98] active:border-primary">
+                          
                                 <div className="flex flex-col items-center gap-2 text-center">
                                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent">
                                     <Upload className="h-5 w-5 text-primary" />
@@ -690,13 +690,13 @@ const TraderProfileSetup = () => {
                                 </div>
                               </button>
                             </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : uploadedDocs[currentDoc.id] ? (
-                  <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-6">
+                      }
+                        </div>);
+
+                })}
+                  </div>) :
+              uploadedDocs[currentDoc.id] ?
+              <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-6">
                     <div className="flex flex-col items-center gap-2 text-center">
                       <CheckCircle2 className="h-10 w-10 text-primary" />
                       <p className="text-sm font-bold text-foreground">Uploaded</p>
@@ -708,13 +708,13 @@ const TraderProfileSetup = () => {
                         <button onClick={() => handleDocUpload(currentDoc.id, "file")} className="text-xs font-semibold text-primary">Replace file</button>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex gap-3">
+                  </div> :
+
+              <div className="flex gap-3">
                     <button
-                      onClick={() => handleDocUpload(currentDoc.id, "camera")}
-                      className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary"
-                    >
+                  onClick={() => handleDocUpload(currentDoc.id, "camera")}
+                  className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary">
+                  
                       <div className="flex flex-col items-center gap-2.5 text-center">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                           <Camera className="h-6 w-6 text-primary" />
@@ -728,9 +728,9 @@ const TraderProfileSetup = () => {
                       </div>
                     </button>
                     <button
-                      onClick={() => handleDocUpload(currentDoc.id, "file")}
-                      className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary"
-                    >
+                  onClick={() => handleDocUpload(currentDoc.id, "file")}
+                  className="flex-1 rounded-2xl border-2 border-dashed border-border bg-card p-6 transition-all active:scale-[0.98] active:border-primary">
+                  
                       <div className="flex flex-col items-center gap-2.5 text-center">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent">
                           <Upload className="h-6 w-6 text-primary" />
@@ -742,30 +742,30 @@ const TraderProfileSetup = () => {
                       </div>
                     </button>
                   </div>
-                )}
+              }
 
                 {/* Navigation between docs */}
                 <div className="flex items-center gap-2">
-                  {docSubStep > 0 && (
-                    <button
-                      onClick={() => setDocSubStep(docSubStep - 1)}
-                      className="flex-1 rounded-2xl border border-border bg-card py-3 text-sm font-semibold text-foreground transition-all active:scale-[0.98]"
-                    >
+                  {docSubStep > 0 &&
+                <button
+                  onClick={() => setDocSubStep(docSubStep - 1)}
+                  className="flex-1 rounded-2xl border border-border bg-card py-3 text-sm font-semibold text-foreground transition-all active:scale-[0.98]">
+                  
                       Previous
                     </button>
-                  )}
-                  {docSubStep < requiredDocuments.length - 1 && (
-                    <button
-                      onClick={() => setDocSubStep(docSubStep + 1)}
-                      className={`flex-1 rounded-2xl py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
-                        isDocFullyUploaded(currentDoc)
-                          ? "bg-primary text-primary-foreground"
-                          : "border border-border bg-card text-muted-foreground"
-                      }`}
-                    >
+                }
+                  {docSubStep < requiredDocuments.length - 1 &&
+                <button
+                  onClick={() => setDocSubStep(docSubStep + 1)}
+                  className={`flex-1 rounded-2xl py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
+                  isDocFullyUploaded(currentDoc) ?
+                  "bg-primary text-primary-foreground" :
+                  "border border-border bg-card text-muted-foreground"}`
+                  }>
+                  
                       {isDocFullyUploaded(currentDoc) ? "Next Document" : "Skip for now"}
                     </button>
-                  )}
+                }
                 </div>
 
                 {/* Document checklist */}
@@ -775,72 +775,72 @@ const TraderProfileSetup = () => {
                   </h4>
                   <div className="rounded-2xl bg-card card-shadow overflow-hidden">
                     {requiredDocuments.map((doc, i) => {
-                      const isUploaded = isDocFullyUploaded(doc);
-                      const isPartial = doc.hasFrontBack && !isUploaded && (!!uploadedDocs[`${doc.id}-front`] || !!uploadedDocs[`${doc.id}-back`]);
-                      const isCurrent = i === docSubStep;
-                      const DocIcon = doc.icon;
-                      return (
-                        <button
-                          key={doc.id}
-                          onClick={() => setDocSubStep(i)}
-                          className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors ${
-                            isCurrent ? "bg-accent/60" : "active:bg-muted/60"
-                          } ${i < requiredDocuments.length - 1 ? "border-b border-border" : ""}`}
-                        >
+                    const isUploaded = isDocFullyUploaded(doc);
+                    const isPartial = doc.hasFrontBack && !isUploaded && (!!uploadedDocs[`${doc.id}-front`] || !!uploadedDocs[`${doc.id}-back`]);
+                    const isCurrent = i === docSubStep;
+                    const DocIcon = doc.icon;
+                    return (
+                      <button
+                        key={doc.id}
+                        onClick={() => setDocSubStep(i)}
+                        className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors ${
+                        isCurrent ? "bg-accent/60" : "active:bg-muted/60"} ${
+                        i < requiredDocuments.length - 1 ? "border-b border-border" : ""}`}>
+                        
                           <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
-                            isUploaded ? "bg-primary" : isPartial ? "bg-primary/50" : "bg-muted"
-                          }`}>
-                            {isUploaded ? (
-                              <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" />
-                            ) : (
-                              <DocIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                            )}
+                        isUploaded ? "bg-primary" : isPartial ? "bg-primary/50" : "bg-muted"}`
+                        }>
+                            {isUploaded ?
+                          <CheckCircle2 className="h-3.5 w-3.5 text-primary-foreground" /> :
+
+                          <DocIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                          }
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className={`text-[11px] font-semibold truncate ${isUploaded ? "text-foreground" : "text-muted-foreground"}`}>
                               {doc.label}
                             </p>
                           </div>
-                          {doc.mandatory && !isUploaded && (
-                            <span className="shrink-0 text-[8px] font-bold text-destructive">REQ</span>
-                          )}
-                          {!doc.mandatory && !isUploaded && (
-                            <span className="shrink-0 text-[8px] font-bold text-muted-foreground">OPT</span>
-                          )}
-                        </button>
-                      );
-                    })}
+                          {doc.mandatory && !isUploaded &&
+                        <span className="shrink-0 text-[8px] font-bold text-destructive">REQ</span>
+                        }
+                          {!doc.mandatory && !isUploaded &&
+                        <span className="shrink-0 text-[8px] font-bold text-muted-foreground">OPT</span>
+                        }
+                        </button>);
+
+                  })}
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          }
 
           {/* Step 3: App Permissions */}
-          {step === 3 && (
-            <div className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4">
+          {step === 3 &&
+          <div className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4">
               <p className="text-xs text-muted-foreground">
                 These permissions help us provide you with the best experience. You can change them later in settings.
               </p>
 
               {[
-                { key: "notifications", icon: Bell, label: "Push Notifications", desc: "Get notified about new job requests, messages, and updates" },
-                { key: "location", icon: MapPinned, label: "Location Access", desc: "Find jobs near you and show your service area to customers" },
-                { key: "camera", icon: Camera, label: "Camera Access", desc: "Take photos for documents, job evidence, and profile picture" },
-                { key: "microphone", icon: Mic, label: "Microphone Access", desc: "Record voice notes for job descriptions and communication" },
-              ].map((perm) => {
-                const isEnabled = permissions[perm.key];
-                return (
-                  <button
-                    key={perm.key}
-                    onClick={() => togglePermission(perm.key)}
-                    className={`flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
-                      isEnabled ? "border-primary bg-primary/5" : "border-border bg-card"
-                    }`}
-                  >
+            { key: "notifications", icon: Bell, label: "Push Notifications", desc: "Get notified about new job requests, messages, and updates" },
+            { key: "location", icon: MapPinned, label: "Location Access", desc: "Find jobs near you and show your service area to customers" },
+            { key: "camera", icon: Camera, label: "Camera Access", desc: "Take photos for documents, job evidence, and profile picture" },
+            { key: "microphone", icon: Mic, label: "Microphone Access", desc: "Record voice notes for job descriptions and communication" }].
+            map((perm) => {
+              const isEnabled = permissions[perm.key];
+              return (
+                <button
+                  key={perm.key}
+                  onClick={() => togglePermission(perm.key)}
+                  className={`flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
+                  isEnabled ? "border-primary bg-primary/5" : "border-border bg-card"}`
+                  }>
+                  
                     <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
-                      isEnabled ? "bg-primary" : "bg-muted"
-                    }`}>
+                  isEnabled ? "bg-primary" : "bg-muted"}`
+                  }>
                       <perm.icon className={`h-6 w-6 ${isEnabled ? "text-primary-foreground" : "text-muted-foreground"}`} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -848,28 +848,28 @@ const TraderProfileSetup = () => {
                       <p className="mt-0.5 text-[11px] text-muted-foreground">{perm.desc}</p>
                     </div>
                     <div className={`flex h-6 w-10 shrink-0 items-center rounded-full px-0.5 transition-all ${
-                      isEnabled ? "bg-primary justify-end" : "bg-muted justify-start"
-                    }`}>
+                  isEnabled ? "bg-primary justify-end" : "bg-muted justify-start"}`
+                  }>
                       <div className="h-5 w-5 rounded-full bg-white shadow-sm" />
                     </div>
-                  </button>
-                );
-              })}
+                  </button>);
+
+            })}
 
               <button
-                onClick={() => {
-                  setPermissions({ notifications: true, location: true, camera: true, microphone: true });
-                }}
-                className="text-center text-xs font-bold text-primary"
-              >
+              onClick={() => {
+                setPermissions({ notifications: true, location: true, camera: true, microphone: true });
+              }}
+              className="text-center text-xs font-bold text-primary">
+              
                 Allow all permissions
               </button>
             </div>
-          )}
+          }
 
           {/* Step 4: Done / Celebration */}
-          {step === 4 && (
-            <div className="flex flex-1 flex-col items-center justify-center gap-6 pb-4 text-center">
+          {step === 4 &&
+          <div className="flex flex-1 flex-col items-center justify-center gap-6 pb-4 text-center">
               <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
                 <PartyPopper className="h-12 w-12 text-primary" />
               </div>
@@ -886,35 +886,35 @@ const TraderProfileSetup = () => {
                 </p>
               </div>
             </div>
-          )}
+          }
 
           {/* Continue button */}
           <div className="pb-12">
-            {step === 2 && !allMandatoryUploaded && (
-              <p className="mb-2 text-center text-[11px] text-destructive font-semibold">
+            {step === 2 && !allMandatoryUploaded &&
+            <p className="mb-2 text-center text-[11px] text-destructive font-semibold">
                 All mandatory documents must be uploaded to continue
               </p>
-            )}
+            }
             <button
               onClick={handleContinue}
               disabled={step < 4 && (!canContinue() || loading)}
-              className="w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98] disabled:opacity-50"
-            >
-              {loading
-                ? "Setting up your account..."
-                : step === 4
-                ? "Let's Go! 🚀"
-                : step === 3
-                ? "Set Up Account"
-                : "Continue"}
+              className="w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98] disabled:opacity-50">
+              
+              {loading ?
+              "Setting up your account..." :
+              step === 4 ?
+              "Let's Go! 🚀" :
+              step === 3 ?
+              "Set Up Account" :
+              "Continue"}
             </button>
           </div>
         </div>
 
         <div className="absolute bottom-2 left-1/2 z-50 h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-foreground/30" />
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default TraderProfileSetup;
