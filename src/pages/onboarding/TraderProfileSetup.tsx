@@ -5,7 +5,7 @@ import {
   ArrowLeft, User, MapPin, Building2, Camera, FileText, Shield,
   CheckCircle2, ChevronRight, Upload, AlertTriangle, Fingerprint,
   CreditCard, HardHat, Scale, ClipboardCheck, ChevronDown,
-  Bell, MapPinned, Mic, PartyPopper, Sparkles } from
+  Bell, MapPinned, Mic, PartyPopper, Sparkles, Eye } from
 "lucide-react";
 import { toast } from "sonner";
 import { serviceCategories, catAServices, catBServices, getAllServices } from "@/data/services";
@@ -25,15 +25,41 @@ interface DocumentRequirement {
   hasFrontBack?: boolean;
 }
 
+const govIdTypes = [
+  { group: "Netherlands", options: [
+    { value: "nl-passport", label: "Dutch Passport (Paspoort)" },
+    { value: "nl-id-card", label: "Dutch National ID Card (Identiteitskaart)" },
+    { value: "nl-driving-licence", label: "Dutch Driving Licence (Rijbewijs)" },
+    { value: "nl-residence-permit", label: "Dutch Residence Permit (Verblijfsvergunning)" },
+  ]},
+  { group: "New Zealand", options: [
+    { value: "nz-passport", label: "New Zealand Passport" },
+    { value: "nz-driving-licence", label: "New Zealand Driving Licence" },
+    { value: "nz-firearms-licence", label: "NZ Firearms Licence" },
+    { value: "nz-kiwi-access", label: "Kiwi Access Card (18+)" },
+  ]},
+];
+
+const docPreviewExamples: Record<string, string> = {
+  "gov-id": "Front & back of your passport or national ID card",
+  "proof-address": "Utility bill or bank statement showing your name and address",
+  "right-to-work": "Visa, work permit, or passport confirming work eligibility",
+  "public-liability": "Insurance certificate showing coverage amount and dates",
+  "trade-qualifications": "Certificate or licence showing your trade qualification",
+  "police-clearance": "Official police clearance or background check certificate",
+  "selfie-verification": "Clear, well-lit photo of your face — no sunglasses or hats",
+  "professional-indemnity": "Insurance certificate for professional indemnity cover",
+};
+
 const requiredDocuments: DocumentRequirement[] = [
 {
   id: "gov-id",
   label: "Government-Issued Photo ID",
-  description: "Valid passport or UK driving licence",
+  description: "Select your document type below",
   icon: CreditCard,
   mandatory: true,
   acceptedFormats: "JPG, PNG, PDF",
-  helpText: "Must be current and not expired. Used to verify your identity and right to work in the UK.",
+  helpText: "Must be current and not expired. Used to verify your identity.",
   hasFrontBack: true
 },
 {
@@ -47,40 +73,40 @@ const requiredDocuments: DocumentRequirement[] = [
 },
 {
   id: "right-to-work",
-  label: "Right to Work in UK",
-  description: "Share code, visa, or UK/Irish passport",
+  label: "Right to Work",
+  description: "Visa, work permit, or passport",
   icon: Scale,
   mandatory: true,
   acceptedFormats: "JPG, PNG, PDF",
-  helpText: "Under the Immigration, Asylum and Nationality Act 2006, we must verify your right to work in the UK before you can take on jobs.",
+  helpText: "We must verify your right to work before you can take on jobs. Upload a valid visa, work permit, or passport page confirming eligibility.",
   hasFrontBack: true
 },
 {
   id: "public-liability",
   label: "Public Liability Insurance",
-  description: "Minimum £1M cover required",
+  description: "Minimum €1M cover required",
   icon: Shield,
   mandatory: true,
   acceptedFormats: "PDF, JPG, PNG",
-  helpText: "Public liability insurance protects you and your customers. Most platforms and clients require a minimum of £1,000,000 cover."
+  helpText: "Public liability insurance protects you and your customers. Most platforms and clients require a minimum of €1,000,000 cover."
 },
 {
   id: "trade-qualifications",
   label: "Trade Qualifications / Certifications",
-  description: "NVQ, City & Guilds, Gas Safe, NICEIC, CSCS, etc.",
+  description: "Relevant trade licences and certificates",
   icon: ClipboardCheck,
   mandatory: true,
   acceptedFormats: "PDF, JPG, PNG",
-  helpText: "Upload your relevant trade qualifications. For regulated trades: Gas Safe registration (gas work), NICEIC/Part P (electrical), CSCS card (construction)."
+  helpText: "Upload your relevant trade qualifications and certifications. This includes any trade-specific licences required in your region."
 },
 {
-  id: "dbs-check",
-  label: "DBS Certificate",
-  description: "Basic or Enhanced Disclosure & Barring Service check",
+  id: "police-clearance",
+  label: "Police Clearance Certificate",
+  description: "Verklaring Omtrent het Gedrag (VOG) or NZ equivalent",
   icon: Fingerprint,
   mandatory: true,
   acceptedFormats: "PDF, JPG, PNG",
-  helpText: "A DBS check ensures customer safety. If you don't have one, you can apply at gov.uk/request-copy-criminal-record. Must be dated within the last 12 months."
+  helpText: "A police clearance certificate ensures customer safety. In the Netherlands this is a VOG (Verklaring Omtrent het Gedrag). In New Zealand, request a Ministry of Justice Criminal Record Check."
 },
 {
   id: "selfie-verification",
@@ -169,8 +195,15 @@ const TraderProfileSetup = () => {
     notifications: false,
     location: false,
     camera: false,
-    microphone: false
+    microphone: false,
+    biometrics: false
   });
+  const [biometricSetupDone, setBiometricSetupDone] = useState(false);
+  const [biometricSetupLoading, setBiometricSetupLoading] = useState(false);
+
+  // Government ID type
+  const [selectedGovIdType, setSelectedGovIdType] = useState("");
+  const [govIdDropdownOpen, setGovIdDropdownOpen] = useState(false);
 
   const togglePermission = (key: string) => {
     setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -626,6 +659,65 @@ const TraderProfileSetup = () => {
                 }
                 </div>
 
+                {/* Government ID type dropdown */}
+                {currentDoc.id === "gov-id" && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setGovIdDropdownOpen(!govIdDropdownOpen)}
+                      className="flex w-full items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3.5 text-left transition-all active:scale-[0.99]"
+                    >
+                      <CreditCard className="h-5 w-5 text-muted-foreground shrink-0" />
+                      <span className={`flex-1 text-sm ${selectedGovIdType ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+                        {selectedGovIdType
+                          ? govIdTypes.flatMap(g => g.options).find(o => o.value === selectedGovIdType)?.label
+                          : "Select document type"}
+                      </span>
+                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${govIdDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
+                    {govIdDropdownOpen && (
+                      <div className="absolute left-0 right-0 top-full z-20 mt-1 rounded-2xl border border-border bg-card shadow-lg overflow-hidden">
+                        {govIdTypes.map((group) => (
+                          <div key={group.group}>
+                            <div className="px-4 py-2 bg-muted/50">
+                              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{group.group}</p>
+                            </div>
+                            {group.options.map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => {
+                                  setSelectedGovIdType(opt.value);
+                                  setGovIdDropdownOpen(false);
+                                }}
+                                className={`flex w-full items-center gap-2.5 px-4 py-3 text-left text-xs font-medium border-b border-border last:border-b-0 transition-colors ${
+                                  selectedGovIdType === opt.value ? "bg-primary/5 text-primary font-bold" : "text-foreground active:bg-muted/50"
+                                }`}
+                              >
+                                {selectedGovIdType === opt.value && <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />}
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Document preview example */}
+                {docPreviewExamples[currentDoc.id] && (
+                  <div className="rounded-2xl border-2 border-dashed border-border/60 bg-muted/20 p-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted">
+                        <Eye className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Example Preview</p>
+                        <p className="mt-0.5 text-xs text-foreground/70">{docPreviewExamples[currentDoc.id]}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Info box */}
                 <div className="rounded-2xl border border-border bg-card p-4">
                   <div className="flex items-start gap-2.5">
@@ -827,38 +919,85 @@ const TraderProfileSetup = () => {
             { key: "notifications", icon: Bell, label: "Push Notifications", desc: "Get notified about new job requests, messages, and updates" },
             { key: "location", icon: MapPinned, label: "Location Access", desc: "Find jobs near you and show your service area to customers" },
             { key: "camera", icon: Camera, label: "Camera Access", desc: "Take photos for documents, job evidence, and profile picture" },
-            { key: "microphone", icon: Mic, label: "Microphone Access", desc: "Record voice notes for job descriptions and communication" }].
+            { key: "microphone", icon: Mic, label: "Microphone Access", desc: "Record voice notes for job descriptions and communication" },
+            { key: "biometrics", icon: Fingerprint, label: "Fingerprint / Biometric Access", desc: "Enable fingerprint authentication for quick and secure sign-in" }].
             map((perm) => {
               const isEnabled = permissions[perm.key];
               return (
-                <button
-                  key={perm.key}
-                  onClick={() => togglePermission(perm.key)}
-                  className={`flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
-                  isEnabled ? "border-primary bg-primary/5" : "border-border bg-card"}`
-                  }>
-                  
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
-                  isEnabled ? "bg-primary" : "bg-muted"}`
-                  }>
-                      <perm.icon className={`h-6 w-6 ${isEnabled ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                <div key={perm.key}>
+                  <button
+                    onClick={() => {
+                      togglePermission(perm.key);
+                      if (perm.key === "biometrics" && !isEnabled) {
+                        setBiometricSetupDone(false);
+                        setBiometricSetupLoading(true);
+                        setTimeout(() => {
+                          setBiometricSetupLoading(false);
+                          setBiometricSetupDone(true);
+                          toast.success("Fingerprint registered successfully!");
+                        }, 2000);
+                      }
+                      if (perm.key === "biometrics" && isEnabled) {
+                        setBiometricSetupDone(false);
+                        setBiometricSetupLoading(false);
+                      }
+                    }}
+                    className={`flex w-full items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
+                    isEnabled ? "border-primary bg-primary/5" : "border-border bg-card"}`
+                    }>
+                    
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                    isEnabled ? "bg-primary" : "bg-muted"}`
+                    }>
+                        <perm.icon className={`h-6 w-6 ${isEnabled ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold text-foreground">{perm.label}</h4>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">{perm.desc}</p>
+                      </div>
+                      <div className={`flex h-6 w-10 shrink-0 items-center rounded-full px-0.5 transition-all ${
+                    isEnabled ? "bg-primary justify-end" : "bg-muted justify-start"}`
+                    }>
+                        <div className="h-5 w-5 rounded-full bg-white shadow-sm" />
+                      </div>
+                    </button>
+
+                  {/* Biometric setup prompt */}
+                  {perm.key === "biometrics" && isEnabled && (
+                    <div className={`mt-2 rounded-2xl border-2 p-4 text-center transition-all ${
+                      biometricSetupDone ? "border-primary/30 bg-primary/5" : "border-border bg-card"}`}>
+                      {biometricSetupLoading ? (
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 animate-pulse">
+                            <Fingerprint className="h-7 w-7 text-primary" />
+                          </div>
+                          <p className="text-xs font-semibold text-foreground">Place your finger on the sensor…</p>
+                          <p className="text-[10px] text-muted-foreground">Registering your fingerprint</p>
+                        </div>
+                      ) : biometricSetupDone ? (
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary">
+                            <CheckCircle2 className="h-7 w-7 text-primary-foreground" />
+                          </div>
+                          <p className="text-xs font-bold text-foreground">Fingerprint Registered ✓</p>
+                          <p className="text-[10px] text-muted-foreground">You can now sign in with your fingerprint</p>
+                        </div>
+                      ) : null}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-bold text-foreground">{perm.label}</h4>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">{perm.desc}</p>
-                    </div>
-                    <div className={`flex h-6 w-10 shrink-0 items-center rounded-full px-0.5 transition-all ${
-                  isEnabled ? "bg-primary justify-end" : "bg-muted justify-start"}`
-                  }>
-                      <div className="h-5 w-5 rounded-full bg-white shadow-sm" />
-                    </div>
-                  </button>);
+                  )}
+                </div>);
 
             })}
 
               <button
               onClick={() => {
-                setPermissions({ notifications: true, location: true, camera: true, microphone: true });
+                setPermissions({ notifications: true, location: true, camera: true, microphone: true, biometrics: true });
+                setBiometricSetupLoading(true);
+                setTimeout(() => {
+                  setBiometricSetupLoading(false);
+                  setBiometricSetupDone(true);
+                  toast.success("Fingerprint registered successfully!");
+                }, 2000);
               }}
               className="text-center text-xs font-bold text-primary">
               

@@ -16,6 +16,8 @@ import CompanyJobCard, { type CompanyJobData } from "@/components/trader/Company
 import CollaborativeQuote from "@/components/trader/CollaborativeQuote";
 import WorkerQuoteRequest from "@/components/trader/WorkerQuoteRequest";
 
+import JobDetailSheet, { type JobDetailData, type JobCategory } from "@/components/trader/JobDetailSheet";
+
 type JobStatus = "incoming" | "quotes" | "active" | "completed";
 
 type MemberStatus = "en_route" | "arrived" | "working" | "done";
@@ -36,13 +38,15 @@ interface Assignment {
 
 interface Job {
   id: string;
-  type: "catA" | "catB";
+  type: "catA" | "catB"; // Internal grouping
+  category: JobCategory;
   title: string;
   icon: string;
   customer: string;
   location: string;
   distance: string;
   price: number | null;
+  inspectionFee?: number;
   timeWindow: string;
   description: string;
   urgency: string | null;
@@ -59,23 +63,87 @@ interface Job {
     expectedDuration?: string;
     expectedBudget?: number;
   };
+  customerData?: {
+    rating: number;
+    reviews: number;
+    isVerified: boolean;
+    memberSince: string;
+  };
 }
 
 const initialJobs: Job[] = [
-  { id: "j1", type: "catA", title: "Tap Repair", icon: "🔧", customer: "Emily R.", location: "Amsterdam Centrum", distance: "2.3 km", price: 65, timeWindow: "Today, 14:00 – 16:00", description: "Kitchen tap is dripping constantly. Standard single-lever mixer tap.", urgency: "Urgent", postedAgo: "5 min ago", status: "incoming", hasVoiceNote: true, voiceDuration: "0:23", customerRequest: { expectedDuration: "1–2 hours", expectedBudget: 80, photos: ["/placeholder.svg"] } },
-  { id: "j2", type: "catA", title: "Light Switch Replacement", icon: "💡", customer: "Mark T.", location: "De Pijp", distance: "4.1 km", price: 55, timeWindow: "Tomorrow, 09:00 – 11:00", description: "2 light switches need replacing in the hallway. Standard switches.", urgency: null, postedAgo: "12 min ago", status: "incoming", hasVoiceNote: false, customerRequest: { expectedDuration: "30 min – 1 hour" } },
-  { id: "j3", type: "catB", title: "Full Bathroom Renovation", icon: "🛁", customer: "Sarah L.", location: "Jordaan", distance: "1.8 km", price: null, timeWindow: "Flexible", description: "Complete bathroom renovation including tiling, plumbing, and fixtures. Approx 6m² bathroom.", urgency: null, postedAgo: "1 hour ago", status: "incoming", hasVoiceNote: true, voiceDuration: "1:12", customerRequest: { expectedDuration: "2–3 days", expectedBudget: 1200, photos: ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"] } },
-  { id: "j4", type: "catA", title: "Drain Unblocking", icon: "🚿", customer: "David K.", location: "Oud-West", distance: "3.0 km", price: 75, timeWindow: "Today, 10:00 – 12:00", description: "Kitchen sink is completely blocked. Tried plunger, no luck.", urgency: null, postedAgo: "", status: "active", crew: [
+  { 
+    id: "j1", 
+    type: "catA", 
+    category: "fixed",
+    title: "Tap Repair", 
+    icon: "🔧", 
+    customer: "Emily R.", 
+    location: "Amsterdam Centrum", 
+    distance: "2.3 km", 
+    price: 65, 
+    timeWindow: "Today, 14:00 – 16:00", 
+    description: "Kitchen tap is dripping constantly. Standard single-lever mixer tap. I have the replacement part already.", 
+    urgency: "Urgent", 
+    postedAgo: "5 min ago", 
+    status: "incoming", 
+    hasVoiceNote: true, 
+    voiceDuration: "0:23", 
+    customerRequest: { expectedDuration: "1–2 hours", expectedBudget: 80, photos: ["/placeholder.svg"] },
+    customerData: { rating: 4.8, reviews: 12, isVerified: true, memberSince: "Jan 2024" }
+  },
+  { 
+    id: "j3", 
+    type: "catB", 
+    category: "estimate",
+    title: "Full Bathroom Renovation", 
+    icon: "🛁", 
+    customer: "Sarah L.", 
+    location: "Jordaan", 
+    distance: "1.8 km", 
+    price: null, 
+    timeWindow: "Flexible", 
+    description: "Complete bathroom renovation including tiling, plumbing, and fixtures. Approx 6m² bathroom. Looking for a high-end finish.", 
+    urgency: null, 
+    postedAgo: "1 hour ago", 
+    status: "incoming", 
+    hasVoiceNote: true, 
+    voiceDuration: "1:12", 
+    customerRequest: { expectedDuration: "2–3 days", expectedBudget: 1200, photos: ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"] },
+    customerData: { rating: 4.9, reviews: 34, isVerified: true, memberSince: "Mar 2023" }
+  },
+  { 
+    id: "j9", 
+    type: "catB", 
+    category: "inspection",
+    title: "Wall Damp Inspection", 
+    icon: "🏠", 
+    customer: "Mark van B.", 
+    location: "De Pijp", 
+    distance: "3.1 km", 
+    price: null, 
+    inspectionFee: 45,
+    timeWindow: "Fri, 10:00 – 12:00", 
+    description: "There is some dampness on the living room wall. Need a professional to check the source and provide a solution.", 
+    urgency: null, 
+    postedAgo: "15 min ago", 
+    status: "incoming", 
+    hasVoiceNote: false, 
+    customerRequest: { expectedDuration: "1 hour", photos: ["/placeholder.svg"] },
+    customerData: { rating: 4.5, reviews: 8, isVerified: false, memberSince: "Feb 2025" }
+  },
+  { id: "j2", type: "catA", category: "fixed", title: "Light Switch Replacement", icon: "💡", customer: "Mark T.", location: "De Pijp", distance: "4.1 km", price: 55, timeWindow: "Tomorrow, 09:00 – 11:00", description: "2 light switches need replacing in the hallway. Standard switches.", urgency: null, postedAgo: "12 min ago", status: "incoming", hasVoiceNote: false, customerRequest: { expectedDuration: "30 min – 1 hour" }, customerData: { rating: 4.2, reviews: 5, isVerified: true, memberSince: "Nov 2024" } },
+  { id: "j4", type: "catA", category: "fixed", title: "Drain Unblocking", icon: "🚿", customer: "David K.", location: "Oud-West", distance: "3.0 km", price: 75, timeWindow: "Today, 10:00 – 12:00", description: "Kitchen sink is completely blocked. Tried plunger, no luck.", urgency: null, postedAgo: "", status: "active", crew: [
     { id: "m1", name: "Jan V.", avatar: "JV", status: "arrived", updatedAt: "2 min ago" },
     { id: "m2", name: "Pieter D.", avatar: "PD", status: "en_route", updatedAt: "8 min ago" },
   ] },
-  { id: "j5", type: "catA", title: "Wall Painting (1 room)", icon: "🎨", customer: "Hannah P.", location: "Amstelveen", distance: "8.5 km", price: 120, timeWindow: "14 Mar, 09:00 – 14:00", description: "Living room walls need repainting. White to light grey.", urgency: null, postedAgo: "", status: "active", crew: [
+  { id: "j5", type: "catA", category: "fixed", title: "Wall Painting (1 room)", icon: "🎨", customer: "Hannah P.", location: "Amstelveen", distance: "8.5 km", price: 120, timeWindow: "14 Mar, 09:00 – 14:00", description: "Living room walls need repainting. White to light grey.", urgency: null, postedAgo: "", status: "active", crew: [
     { id: "m3", name: "Lena K.", avatar: "LK", status: "working", updatedAt: "15 min ago" },
     { id: "m4", name: "Tom B.", avatar: "TB", status: "arrived", updatedAt: "5 min ago" },
     { id: "m5", name: "Sara M.", avatar: "SM", status: "en_route", updatedAt: "12 min ago" },
   ] },
   {
-    id: "j6", type: "catA", title: "Toilet Repair", icon: "🔧", customer: "Lisa M.", location: "Oost", distance: "5.2 km", price: 55, timeWindow: "10 Mar, 11:00", description: "Flush mechanism not working properly.", urgency: null, postedAgo: "", status: "completed",
+    id: "j6", type: "catA", category: "fixed", title: "Toilet Repair", icon: "🔧", customer: "Lisa M.", location: "Oost", distance: "5.2 km", price: 55, timeWindow: "10 Mar, 11:00", description: "Flush mechanism not working properly.", urgency: null, postedAgo: "", status: "completed",
     completedDate: "10 Mar 2025", duration: "1h 45m",
     assignment: {
       type: "group", groupName: "Plumbing Squad",
@@ -86,7 +154,7 @@ const initialJobs: Job[] = [
     },
   },
   {
-    id: "j7", type: "catA", title: "Boiler Service", icon: "🔥", customer: "Peter W.", location: "Centrum", distance: "1.5 km", price: 95, timeWindow: "8 Mar, 10:00", description: "Annual boiler service and safety check.", urgency: null, postedAgo: "", status: "completed",
+    id: "j7", type: "catA", category: "fixed", title: "Boiler Service", icon: "🔥", customer: "Peter W.", location: "Centrum", distance: "1.5 km", price: 95, timeWindow: "8 Mar, 10:00", description: "Annual boiler service and safety check.", urgency: null, postedAgo: "", status: "completed",
     completedDate: "8 Mar 2025", duration: "2h 10m",
     assignment: {
       type: "individual",
@@ -94,7 +162,7 @@ const initialJobs: Job[] = [
     },
   },
   {
-    id: "j8", type: "catA", title: "Kitchen Tiling", icon: "🧱", customer: "Anna J.", location: "Westerpark", distance: "3.8 km", price: 210, timeWindow: "5 Mar, 09:00 – 15:00", description: "Re-tile kitchen backsplash, approx 4m².", urgency: null, postedAgo: "", status: "completed",
+    id: "j8", type: "catA", category: "fixed", title: "Kitchen Tiling", icon: "🧱", customer: "Anna J.", location: "Westerpark", distance: "3.8 km", price: 210, timeWindow: "5 Mar, 09:00 – 15:00", description: "Re-tile kitchen backsplash, approx 4m².", urgency: null, postedAgo: "", status: "completed",
     completedDate: "5 Mar 2025", duration: "5h 30m",
     assignment: {
       type: "individuals",
@@ -257,6 +325,10 @@ const TraderJobs = () => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sentQuotes, setSentQuotes] = useState(initialSentQuotes);
   
+  // Detail sheet state
+  const [selectedJob, setSelectedJob] = useState<JobDetailData | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  
   // Collaborative quote state
   const [collabQuoteJobId, setCollabQuoteJobId] = useState<string | null>(null);
   const [collabMembers, setCollabMembers] = useState<{ id: string; name: string; role: string }[]>([]);
@@ -351,8 +423,81 @@ const TraderJobs = () => {
     toast.success("Job marked as complete! 🎉");
   };
 
+  const openJobDetail = (job: Job) => {
+    setSelectedJob({
+      id: job.id,
+      category: job.category,
+      title: job.title,
+      icon: job.icon,
+      description: job.description,
+      location: job.location,
+      distance: job.distance,
+      timeWindow: job.timeWindow,
+      price: job.price ?? undefined,
+      inspectionFee: job.inspectionFee,
+      customer: {
+        name: job.customer,
+        rating: job.customerData?.rating ?? 5.0,
+        reviews: job.customerData?.reviews ?? 0,
+        isVerified: job.customerData?.isVerified ?? false,
+        memberSince: job.customerData?.memberSince ?? "Recently",
+      },
+      media: {
+        photos: job.customerRequest?.photos,
+        voiceNote: job.hasVoiceNote ? {
+          url: "#",
+          duration: job.voiceDuration || "0:15",
+        } : undefined,
+      }
+    });
+    setIsDetailOpen(true);
+  };
+
+  const handleDetailAction = (jobId: string, action: string, data?: any) => {
+    switch (action) {
+      case "accept":
+        acceptJob(jobId);
+        break;
+      case "send_estimate":
+        // For individual, just accept/move to quotes. For agency, maybe more complex.
+        // For now, let's treat it as a sent quote
+        const job = jobs.find(j => j.id === jobId);
+        if (job) {
+          setSentQuotes(prev => [{
+            id: crypto.randomUUID(),
+            jobTitle: job.title,
+            icon: job.icon,
+            customer: job.customer,
+            location: job.location,
+            distance: job.distance,
+            sentAt: "Just now",
+            quoteTotal: 0, // In reality, this would come from the 'data' param
+            materialsCount: 0,
+            status: "pending" as const,
+          }, ...prev]);
+          setJobs(prev => prev.filter(j => j.id !== jobId));
+          toast.success("Estimate sent to customer!");
+        }
+        break;
+      case "approve_inspection":
+        toast.success("Inspection approved! We've notified the customer.");
+        acceptJob(jobId);
+        break;
+      default:
+        console.warn("Unknown job action:", action);
+    }
+    setIsDetailOpen(false);
+  };
+
   return (
     <MobileLayout role="trader">
+      {/* Detail Sheet */}
+      <JobDetailSheet 
+        isOpen={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        job={selectedJob}
+        onAction={handleDetailAction}
+      />
       {/* Sticky header + tabs */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md">
         <div className="px-4 pt-6 pb-1">
@@ -631,8 +776,8 @@ const TraderJobs = () => {
                   ) : (
                     <IncomingJobCard
                       job={job}
-                      expanded={expandedId === job.id}
-                      onToggleExpand={() => setExpandedId(expandedId === job.id ? null : job.id)}
+                      expanded={false}
+                      onToggleExpand={() => openJobDetail(job)}
                       onAccept={() => {
                         if (isIndividual && job.type === "catB") {
                           setSentQuotes(prev => [{
@@ -683,8 +828,8 @@ const TraderJobs = () => {
                       price: job.price,
                       crew: job.crew,
                     }}
-                    expanded={isExpanded}
-                    onToggleExpand={() => setExpandedId(isExpanded ? null : job.id)}
+                    expanded={false}
+                    onToggleExpand={() => openJobDetail(job)}
                     description={job.description}
                     viewMode={isIndividual ? "individual" : "agency"}
                   />
@@ -714,7 +859,7 @@ const TraderJobs = () => {
                     return (
                       <div className="rounded-2xl bg-card overflow-hidden border border-border">
                         <button
-                          onClick={() => setExpandedId(isExpanded ? null : job.id)}
+                          onClick={() => openJobDetail(job)}
                           className="w-full px-4 py-3.5 text-left"
                         >
                           <div className="flex gap-3">
