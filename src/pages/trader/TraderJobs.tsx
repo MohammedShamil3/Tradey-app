@@ -102,7 +102,7 @@ const initialJobs: Job[] = [
     location: "Jordaan", 
     distance: "1.8 km", 
     price: null, 
-    timeWindow: "Flexible", 
+    timeWindow: "Mon, 10:00 – 12:00", 
     description: "Complete bathroom renovation including tiling, plumbing, and fixtures. Approx 6m² bathroom. Looking for a high-end finish.", 
     urgency: null, 
     postedAgo: "1 hour ago", 

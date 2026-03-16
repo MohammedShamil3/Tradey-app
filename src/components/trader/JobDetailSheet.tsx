@@ -75,7 +75,7 @@ const JobDetailSheet = ({ job, isOpen, onOpenChange, onAction }: JobDetailSheetP
               onClick={() => onOpenChange(false)}
               className="flex-1 rounded-2xl border border-border py-4 text-sm font-bold text-muted-foreground active:bg-muted"
             >
-              Declined
+              Decline
             </button>
             <button
               onClick={() => onAction(job.id, "send_estimate")}
