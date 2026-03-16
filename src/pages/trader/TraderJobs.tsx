@@ -185,7 +185,7 @@ const companyJobs: CompanyJobData[] = [
     companyName: "BuildRight Ltd.",
     distance: "6.2 km",
     price: null,
-    timeWindow: "Next week, flexible",
+    timeWindow: "Next week, Mon – Wed",
     description: "Full plumbing inspection and repair across 3 office floors. Includes bathroom fixtures, kitchen area, and water heater.",
     postedAgo: "30 min ago",
     customerRequest: {
